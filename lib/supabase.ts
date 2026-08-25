@@ -1,3 +1,7 @@
+// Must be imported before anything else touches @supabase/supabase-js:
+// React Native's URL implementation is incomplete and supabase-js relies on it.
+import 'react-native-url-polyfill/auto';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
