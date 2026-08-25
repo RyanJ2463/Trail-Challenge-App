@@ -1,3 +1,7 @@
+// Must be imported before anything touches @supabase/supabase-js: React
+// Native's URL implementation is incomplete and supabase-js relies on it.
+import 'react-native-url-polyfill/auto';
+
 import { registerRootComponent } from 'expo';
 
 import App from './App';
