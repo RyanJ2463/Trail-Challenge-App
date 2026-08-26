@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../lib/auth-context';
 import {
   acceptFriendRequest,
@@ -199,9 +199,13 @@ export default function Friends() {
       ) : (
         friends.map((friend) => (
           <View key={friend.id} style={styles.row}>
-            <Text style={styles.name} numberOfLines={1}>
-              {friend.display_name}
-            </Text>
+            <Link href={`/profile/${friend.id}`} asChild>
+              <TouchableOpacity style={styles.nameLink}>
+                <Text style={styles.name} numberOfLines={1}>
+                  {friend.display_name}
+                </Text>
+              </TouchableOpacity>
+            </Link>
             <TouchableOpacity
               disabled={busyId === friend.id}
               onPress={() => runAction(friend.id, () => removeFriendship(userId!, friend.id))}
@@ -290,11 +294,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     marginTop: spacing.sm,
   },
+  nameLink: {
+    flex: 1,
+    marginRight: spacing.sm,
+  },
   name: {
     ...typography.subheading,
     color: colors.text,
-    flex: 1,
-    marginRight: spacing.sm,
   },
   stateText: {
     color: colors.textMuted,

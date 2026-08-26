@@ -316,6 +316,11 @@ export type Database = {
           display_name: string
           email: string
           id: string
+          profile_visibility: string
+          show_lifetime_miles: boolean
+          show_lifetime_steps: boolean
+          show_monthly_stats: boolean
+          show_records: boolean
           username: string
         }
         Insert: {
@@ -324,6 +329,11 @@ export type Database = {
           display_name: string
           email: string
           id: string
+          profile_visibility?: string
+          show_lifetime_miles?: boolean
+          show_lifetime_steps?: boolean
+          show_monthly_stats?: boolean
+          show_records?: boolean
           username: string
         }
         Update: {
@@ -332,6 +342,11 @@ export type Database = {
           display_name?: string
           email?: string
           id?: string
+          profile_visibility?: string
+          show_lifetime_miles?: boolean
+          show_lifetime_steps?: boolean
+          show_monthly_stats?: boolean
+          show_records?: boolean
           username?: string
         }
         Relationships: []
@@ -357,6 +372,31 @@ export type Database = {
           display_name: string
           username: string
           total_miles: number
+        }[]
+      }
+      get_profile: {
+        Args: { p_user_id: string }
+        Returns: {
+          user_id: string
+          username: string
+          display_name: string
+          avatar_url: string | null
+          is_owner: boolean
+          profile_visibility: string
+          show_lifetime_miles: boolean
+          show_lifetime_steps: boolean
+          show_monthly_stats: boolean
+          show_records: boolean
+          lifetime_miles: number | null
+          lifetime_steps: number | null
+          current_month_miles: number | null
+          current_month_steps: number | null
+          best_day_miles: number | null
+          best_day_date: string | null
+          best_week_miles: number | null
+          best_week_start: string | null
+          best_month_miles: number | null
+          best_month: string | null
         }[]
       }
     }

@@ -105,6 +105,11 @@ export default function Home() {
           <TouchableOpacity onPress={() => router.push('/friends')} hitSlop={8}>
             <Text style={styles.headerLink}>👥 Friends</Text>
           </TouchableOpacity>
+          {userId && (
+            <TouchableOpacity onPress={() => router.push(`/profile/${userId}`)} hitSlop={8}>
+              <Text style={styles.headerLink}>👤 Profile</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity onPress={() => supabase.auth.signOut()} hitSlop={8}>
             <Text style={styles.signOut}>Sign out</Text>
           </TouchableOpacity>

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../lib/auth-context';
 import { getFriendsWeeklyLeaderboard, getWeeklyLeaderboard, type LeaderboardEntry } from '../../lib/leaderboard';
 import { colors, radius, spacing, typography } from '../../lib/theme';
@@ -96,14 +96,19 @@ export default function Leaderboard() {
           const rank = index + 1;
           const isMe = entry.userId === userId;
           return (
-            <View key={entry.userId} style={[styles.row, isMe && styles.rowMe]}>
-              <Text style={styles.rank}>{RANK_MEDAL[rank] ?? rank}</Text>
-              <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
-                {entry.displayName}
-                {isMe ? ' (you)' : ''}
-              </Text>
-              <Text style={styles.miles}>{entry.totalMiles.toFixed(1)} mi</Text>
-            </View>
+            <Link key={entry.userId} href={`/profile/${entry.userId}`} asChild>
+              <TouchableOpacity
+                style={StyleSheet.flatten([styles.row, isMe && styles.rowMe])}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.rank}>{RANK_MEDAL[rank] ?? rank}</Text>
+                <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
+                  {entry.displayName}
+                  {isMe ? ' (you)' : ''}
+                </Text>
+                <Text style={styles.miles}>{entry.totalMiles.toFixed(1)} mi</Text>
+              </TouchableOpacity>
+            </Link>
           );
         })
       )}

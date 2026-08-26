@@ -107,7 +107,11 @@ export default function NewChallengeDetails() {
         isPublic,
         createdBy: userId,
       });
-      router.replace(`/challenge/${challenge.id}`);
+      // Drop the whole "start a challenge" flow (picker + this form) from
+      // history rather than replace()-ing just this screen, so the new
+      // challenge's back button returns to Home instead of the picker.
+      router.dismissAll();
+      router.push(`/challenge/${challenge.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not create the challenge.');
     } finally {

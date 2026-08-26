@@ -9,6 +9,8 @@ export default function AppLayout() {
       <Stack.Screen name="challenge/[id]" options={{ title: '' }} />
       <Stack.Screen name="leaderboard" options={{ title: 'Weekly Leaderboard' }} />
       <Stack.Screen name="friends" options={{ title: 'Friends' }} />
+      <Stack.Screen name="profile/[id]" options={{ title: '' }} />
+      <Stack.Screen name="profile/edit" options={{ title: 'Edit Profile' }} />
     </Stack>
   );
 }
