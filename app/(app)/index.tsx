@@ -18,6 +18,7 @@ import {
   type ChallengeWithTrail,
 } from '../../lib/challenges';
 import { activityTypeMeta } from '../../lib/activityTypes';
+import { isHealthSyncAvailable, requestHealthAuthorization, syncHealthData } from '../../lib/healthSync';
 import { colors, radius, spacing, typography } from '../../lib/theme';
 
 export default function Home() {
@@ -30,6 +31,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [joiningId, setJoiningId] = useState<number | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!userId) return;
@@ -65,6 +68,25 @@ export default function Home() {
     }
   };
 
+  const handleSyncHealth = async () => {
+    if (!userId) return;
+    setSyncing(true);
+    setSyncStatus(null);
+    try {
+      await requestHealthAuthorization();
+      const { daysSynced } = await syncHealthData(userId);
+      setSyncStatus(
+        daysSynced === 0
+          ? 'No Health data found in the last 30 days. On the Simulator, add sample data in the Health app first.'
+          : `Synced ${daysSynced} day${daysSynced === 1 ? '' : 's'} of activity.`
+      );
+    } catch (err) {
+      setSyncStatus(err instanceof Error ? err.message : 'Could not sync Health data.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   return (
     <ScrollView
       style={styles.container}
@@ -88,6 +110,22 @@ export default function Home() {
       >
         <Text style={styles.startButtonText}>+ Start a challenge</Text>
       </TouchableOpacity>
+
+      {isHealthSyncAvailable() && (
+        <View style={styles.syncSection}>
+          <TouchableOpacity
+            style={[styles.syncButton, syncing && styles.buttonDisabled]}
+            onPress={handleSyncHealth}
+            disabled={syncing}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.syncButtonText}>
+              {syncing ? 'Syncing…' : '🔄 Sync Health data'}
+            </Text>
+          </TouchableOpacity>
+          {syncStatus && <Text style={styles.syncStatus}>{syncStatus}</Text>}
+        </View>
+      )}
 
       {loading ? (
         <ActivityIndicator style={styles.loading} color={colors.primary} />
@@ -211,6 +249,31 @@ const styles = StyleSheet.create({
   },
   loading: {
     marginTop: spacing.xl,
+  },
+  syncSection: {
+    marginBottom: spacing.xl,
+  },
+  syncButton: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  syncButtonText: {
+    color: colors.primaryDark,
+    fontWeight: '600',
+  },
+  syncStatus: {
+    color: colors.textMuted,
+    fontSize: 13,
+    marginTop: spacing.sm,
+    textAlign: 'center',
+    lineHeight: 18,
   },
   sectionTitle: {
     ...typography.heading,
