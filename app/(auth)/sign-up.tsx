@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { colors, radius, spacing, typography } from '../../lib/theme';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -51,12 +52,13 @@ export default function SignUp() {
   if (confirmationSent) {
     return (
       <View style={styles.container}>
+        <Text style={styles.wordmark}>📬</Text>
         <Text style={styles.title}>Check your email</Text>
         <Text style={styles.info}>
           We sent a confirmation link to {email}. Confirm your email, then sign in.
         </Text>
         <Link href="/" style={styles.link}>
-          <Text>Back to sign in</Text>
+          <Text style={styles.linkText}>Back to sign in</Text>
         </Link>
       </View>
     );
@@ -65,12 +67,14 @@ export default function SignUp() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create account</Text>
+      <Text style={styles.subtitle}>Join a challenge and start racking up trail miles.</Text>
 
       {error && <Text style={styles.error}>{error}</Text>}
 
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor={colors.textFaint}
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"
@@ -80,6 +84,7 @@ export default function SignUp() {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={colors.textFaint}
         secureTextEntry
         autoComplete="new-password"
         value={password}
@@ -88,6 +93,7 @@ export default function SignUp() {
       <TextInput
         style={styles.input}
         placeholder="Username"
+        placeholderTextColor={colors.textFaint}
         autoCapitalize="none"
         autoComplete="off"
         value={username}
@@ -96,6 +102,7 @@ export default function SignUp() {
       <TextInput
         style={styles.input}
         placeholder="Display name"
+        placeholderTextColor={colors.textFaint}
         autoComplete="off"
         value={displayName}
         onChangeText={setDisplayName}
@@ -110,7 +117,7 @@ export default function SignUp() {
       </TouchableOpacity>
 
       <Link href="/" style={styles.link}>
-        <Text>Already have an account? Sign in</Text>
+        <Text style={styles.linkText}>Already have an account? Sign in</Text>
       </Link>
     </View>
   );
@@ -120,50 +127,67 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
+    padding: spacing.xl,
+    backgroundColor: colors.background,
+  },
+  wordmark: {
+    fontSize: 40,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 32,
+    ...typography.title,
+    color: colors.text,
     textAlign: 'center',
   },
+  subtitle: {
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: spacing.xs,
+    marginBottom: spacing.xxl,
+  },
   input: {
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     fontSize: 16,
+    color: colors.text,
   },
   button: {
-    backgroundColor: '#2f6f4f',
-    borderRadius: 8,
-    padding: 14,
+    backgroundColor: colors.primary,
+    borderRadius: radius.sm,
+    padding: spacing.md + 2,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.xs,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
     fontSize: 16,
   },
   link: {
-    marginTop: 20,
-    textAlign: 'center',
+    marginTop: spacing.xl,
+    alignSelf: 'center',
+  },
+  linkText: {
+    color: colors.primary,
+    fontWeight: '600',
   },
   error: {
-    color: '#b3261e',
-    marginBottom: 12,
+    color: colors.danger,
+    marginBottom: spacing.md,
     textAlign: 'center',
   },
   info: {
     textAlign: 'center',
-    marginBottom: 12,
-    color: '#444',
+    marginBottom: spacing.md,
+    color: colors.textMuted,
+    lineHeight: 20,
   },
 });

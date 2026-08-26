@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { colors, radius, spacing, typography } from '../../lib/theme';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -20,13 +21,16 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.wordmark}>🥾</Text>
       <Text style={styles.title}>Trail Challenge</Text>
+      <Text style={styles.subtitle}>Turn your miles into a hike on the map.</Text>
 
       {error && <Text style={styles.error}>{error}</Text>}
 
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor={colors.textFaint}
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"
@@ -36,6 +40,7 @@ export default function SignIn() {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={colors.textFaint}
         secureTextEntry
         autoComplete="password"
         value={password}
@@ -51,7 +56,7 @@ export default function SignIn() {
       </TouchableOpacity>
 
       <Link href="/sign-up" style={styles.link}>
-        <Text>Don&apos;t have an account? Sign up</Text>
+        <Text style={styles.linkText}>Don&apos;t have an account? Sign up</Text>
       </Link>
     </View>
   );
@@ -61,45 +66,61 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
+    padding: spacing.xl,
+    backgroundColor: colors.background,
+  },
+  wordmark: {
+    fontSize: 40,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 32,
+    ...typography.title,
+    color: colors.text,
     textAlign: 'center',
   },
+  subtitle: {
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: spacing.xs,
+    marginBottom: spacing.xxl,
+  },
   input: {
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     fontSize: 16,
+    color: colors.text,
   },
   button: {
-    backgroundColor: '#2f6f4f',
-    borderRadius: 8,
-    padding: 14,
+    backgroundColor: colors.primary,
+    borderRadius: radius.sm,
+    padding: spacing.md + 2,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.xs,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
     fontSize: 16,
   },
   link: {
-    marginTop: 20,
-    textAlign: 'center',
+    marginTop: spacing.xl,
+    alignSelf: 'center',
+  },
+  linkText: {
+    color: colors.primary,
+    fontWeight: '600',
   },
   error: {
-    color: '#b3261e',
-    marginBottom: 12,
+    color: colors.danger,
+    marginBottom: spacing.md,
     textAlign: 'center',
   },
 });

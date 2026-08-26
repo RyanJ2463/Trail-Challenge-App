@@ -124,6 +124,7 @@ export type Database = {
       }
       challenges: {
         Row: {
+          activity_type: string
           created_at: string
           created_by: string
           end_date: string | null
@@ -134,6 +135,7 @@ export type Database = {
           trail_id: number
         }
         Insert: {
+          activity_type: string
           created_at?: string
           created_by: string
           end_date?: string | null
@@ -144,6 +146,7 @@ export type Database = {
           trail_id: number
         }
         Update: {
+          activity_type?: string
           created_at?: string
           created_by?: string
           end_date?: string | null

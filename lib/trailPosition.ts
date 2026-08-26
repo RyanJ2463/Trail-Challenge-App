@@ -88,3 +88,47 @@ export function computeTrailPosition(
   // Unreachable given the bounds checks above; satisfies the type checker.
   return null;
 }
+
+export type RouteSegments = {
+  /** [longitude, latitude] pairs from the trailhead up to the current position. */
+  completed: [number, number][];
+  /** [longitude, latitude] pairs from the current position to the trail's end. */
+  remaining: [number, number][];
+  position: TrailPosition;
+};
+
+/**
+ * Splits a trail's point list into a "completed" and "remaining" polyline
+ * around a cumulative mileage total, for rendering a two-color route (e.g.
+ * highlighting how far a user has hiked) instead of a single line.
+ */
+export function getRouteSegments(
+  points: TrailPoint[],
+  cumulativeMiles: number
+): RouteSegments | null {
+  const position = computeTrailPosition(points, cumulativeMiles);
+  if (position === null) {
+    return null;
+  }
+
+  const sorted = [...points].sort(
+    (a, b) => a.cumulativeDistanceMiles - b.cumulativeDistanceMiles
+  );
+  const here: [number, number] = [position.longitude, position.latitude];
+  const precedingIndex = sorted.findIndex((p) => p.id === position.precedingPoint.id);
+
+  const completed = [
+    ...sorted.slice(0, precedingIndex + 1).map((p): [number, number] => [p.longitude, p.latitude]),
+  ];
+  // Only append the interpolated point if it differs from the last trail
+  // point already included (avoids a zero-length duplicate segment).
+  if (position.nextPoint !== null) {
+    completed.push(here);
+  }
+
+  const remaining: [number, number][] = position.nextPoint
+    ? [here, ...sorted.slice(precedingIndex + 1).map((p): [number, number] => [p.longitude, p.latitude])]
+    : [];
+
+  return { completed, remaining, position };
+}
