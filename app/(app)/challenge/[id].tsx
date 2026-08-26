@@ -11,6 +11,8 @@ import {
   listParticipants,
   type ChallengeWithTrail,
 } from '../../../lib/challenges';
+import { listInvitesForChallenge } from '../../../lib/challengeInvites';
+import type { UserProfile } from '../../../lib/friends';
 import { getUserCumulativeMiles } from '../../../lib/challengeProgress';
 import { getRouteSegments, type TrailPoint } from '../../../lib/trailPosition';
 import { activityTypeMeta } from '../../../lib/activityTypes';
@@ -29,6 +31,7 @@ export default function ChallengeDetail() {
   const [challenge, setChallenge] = useState<ChallengeWithTrail | null>(null);
   const [points, setPoints] = useState<TrailPoint[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<UserProfile[]>([]);
   const [joined, setJoined] = useState(false);
   const [cumulativeMiles, setCumulativeMiles] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -45,23 +48,32 @@ export default function ChallengeDetail() {
     setChallenge(challengeData);
     setParticipants(participantList);
     setJoined(memberStatus);
-
-    const { data: pointRows, error: pointsError } = await supabase
-      .from('trail_points')
-      .select('id, sequence, latitude, longitude, cumulative_distance_miles, label')
-      .eq('trail_id', challengeData.trail_id)
-      .order('sequence', { ascending: true });
-    if (pointsError) throw pointsError;
-    setPoints(
-      (pointRows ?? []).map((p) => ({
-        id: p.id,
-        sequence: p.sequence,
-        latitude: p.latitude,
-        longitude: p.longitude,
-        cumulativeDistanceMiles: p.cumulative_distance_miles,
-        label: p.label,
-      }))
+    setPendingInvites(
+      !challengeData.is_public && challengeData.created_by === userId
+        ? await listInvitesForChallenge(challengeId)
+        : []
     );
+
+    if (challengeData.trail_id === null) {
+      setPoints([]);
+    } else {
+      const { data: pointRows, error: pointsError } = await supabase
+        .from('trail_points')
+        .select('id, sequence, latitude, longitude, cumulative_distance_miles, label')
+        .eq('trail_id', challengeData.trail_id)
+        .order('sequence', { ascending: true });
+      if (pointsError) throw pointsError;
+      setPoints(
+        (pointRows ?? []).map((p) => ({
+          id: p.id,
+          sequence: p.sequence,
+          latitude: p.latitude,
+          longitude: p.longitude,
+          cumulativeDistanceMiles: p.cumulative_distance_miles,
+          label: p.label,
+        }))
+      );
+    }
 
     const miles = await getUserCumulativeMiles(
       userId,
@@ -114,66 +126,68 @@ export default function ChallengeDetail() {
     <View style={styles.container}>
       <Stack.Screen options={{ title: challenge.name }} />
 
-      <View style={styles.mapWrap}>
-        <Mapbox.MapView style={styles.map} scrollEnabled zoomEnabled styleURL={Mapbox.StyleURL.Outdoors}>
-          <Mapbox.Camera
-            defaultSettings={
-              bounds
-                ? {
-                    bounds: {
-                      ne: bounds.ne,
-                      sw: bounds.sw,
-                      paddingTop: 60,
-                      paddingBottom: 60,
-                      paddingLeft: 40,
-                      paddingRight: 40,
-                    },
-                  }
-                : { centerCoordinate: [-122.4194, 37.7749], zoomLevel: 10 }
-            }
-          />
+      {challenge.trail_id !== null && (
+        <View style={styles.mapWrap}>
+          <Mapbox.MapView style={styles.map} scrollEnabled zoomEnabled styleURL={Mapbox.StyleURL.Outdoors}>
+            <Mapbox.Camera
+              defaultSettings={
+                bounds
+                  ? {
+                      bounds: {
+                        ne: bounds.ne,
+                        sw: bounds.sw,
+                        paddingTop: 60,
+                        paddingBottom: 60,
+                        paddingLeft: 40,
+                        paddingRight: 40,
+                      },
+                    }
+                  : { centerCoordinate: [-122.4194, 37.7749], zoomLevel: 10 }
+              }
+            />
 
-          {segments && segments.remaining.length > 1 && (
-            <Mapbox.ShapeSource
-              id="remaining-route"
-              shape={{ type: 'LineString', coordinates: segments.remaining }}
-            >
-              <Mapbox.LineLayer
-                id="remaining-route-line"
-                style={{ lineColor: colors.route, lineWidth: 4, lineCap: 'round', lineJoin: 'round' }}
-              />
-            </Mapbox.ShapeSource>
-          )}
+            {segments && segments.remaining.length > 1 && (
+              <Mapbox.ShapeSource
+                id="remaining-route"
+                shape={{ type: 'LineString', coordinates: segments.remaining }}
+              >
+                <Mapbox.LineLayer
+                  id="remaining-route-line"
+                  style={{ lineColor: colors.route, lineWidth: 4, lineCap: 'round', lineJoin: 'round' }}
+                />
+              </Mapbox.ShapeSource>
+            )}
 
-          {segments && segments.completed.length > 1 && (
-            <Mapbox.ShapeSource
-              id="completed-route"
-              shape={{ type: 'LineString', coordinates: segments.completed }}
-            >
-              <Mapbox.LineLayer
-                id="completed-route-line"
-                style={{ lineColor: colors.primary, lineWidth: 5, lineCap: 'round', lineJoin: 'round' }}
-              />
-            </Mapbox.ShapeSource>
-          )}
+            {segments && segments.completed.length > 1 && (
+              <Mapbox.ShapeSource
+                id="completed-route"
+                shape={{ type: 'LineString', coordinates: segments.completed }}
+              >
+                <Mapbox.LineLayer
+                  id="completed-route-line"
+                  style={{ lineColor: colors.primary, lineWidth: 5, lineCap: 'round', lineJoin: 'round' }}
+                />
+              </Mapbox.ShapeSource>
+            )}
 
-          {segments && (
-            <Mapbox.PointAnnotation
-              id="current-position"
-              coordinate={[segments.position.longitude, segments.position.latitude]}
-            >
-              <View style={styles.markerRing}>
-                <View style={styles.marker} />
-              </View>
-            </Mapbox.PointAnnotation>
-          )}
-        </Mapbox.MapView>
-      </View>
+            {segments && (
+              <Mapbox.PointAnnotation
+                id="current-position"
+                coordinate={[segments.position.longitude, segments.position.latitude]}
+              >
+                <View style={styles.markerRing}>
+                  <View style={styles.marker} />
+                </View>
+              </Mapbox.PointAnnotation>
+            )}
+          </Mapbox.MapView>
+        </View>
+      )}
 
       <ScrollView style={styles.info} contentContainerStyle={styles.infoContent}>
         {error && <Text style={styles.error}>{error}</Text>}
 
-        <Text style={styles.trailName}>{challenge.trails?.name ?? 'Unknown trail'}</Text>
+        <Text style={styles.trailName}>{challenge.trails?.name ?? 'Open goal — no trail'}</Text>
         <Text style={styles.activityLabel}>
           {activityTypeMeta(challenge.activity_type).emoji} {activityTypeMeta(challenge.activity_type).label}
         </Text>
@@ -206,6 +220,19 @@ export default function ChallengeDetail() {
               </View>
             ))}
           </View>
+        )}
+
+        {pendingInvites.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Invited · {pendingInvites.length}</Text>
+            <View style={styles.participantList}>
+              {pendingInvites.map((invitee) => (
+                <View key={invitee.id} style={styles.participantChip}>
+                  <Text style={styles.participantText}>{invitee.display_name} · pending</Text>
+                </View>
+              ))}
+            </View>
+          </>
         )}
       </ScrollView>
     </View>

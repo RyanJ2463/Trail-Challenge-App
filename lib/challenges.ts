@@ -58,7 +58,7 @@ export async function listTrails(): Promise<Tables<'trails'>[]> {
 
 export async function createChallenge(input: {
   name: string;
-  trailId: number;
+  trailId: number | null;
   activityType: ActivityType;
   startDate: string;
   endDate: string | null;

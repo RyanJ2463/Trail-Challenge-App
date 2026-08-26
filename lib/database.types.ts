@@ -14,7 +14,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.17"
   }
   graphql_public: {
     Tables: {
@@ -43,6 +43,52 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_invites: {
+        Row: {
+          challenge_id: number
+          created_at: string
+          invitee_id: string
+          inviter_id: string
+          status: string
+        }
+        Insert: {
+          challenge_id: number
+          created_at?: string
+          invitee_id: string
+          inviter_id: string
+          status?: string
+        }
+        Update: {
+          challenge_id?: number
+          created_at?: string
+          invitee_id?: string
+          inviter_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_invites_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_invites_invitee_id_fkey"
+            columns: ["invitee_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_invites_inviter_id_fkey"
+            columns: ["inviter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenge_participants: {
         Row: {
           challenge_id: number
@@ -132,7 +178,7 @@ export type Database = {
           is_public: boolean
           name: string
           start_date: string
-          trail_id: number
+          trail_id: number | null
         }
         Insert: {
           activity_type: string
@@ -143,7 +189,7 @@ export type Database = {
           is_public?: boolean
           name: string
           start_date: string
-          trail_id: number
+          trail_id?: number | null
         }
         Update: {
           activity_type?: string
@@ -154,7 +200,7 @@ export type Database = {
           is_public?: boolean
           name?: string
           start_date?: string
-          trail_id?: number
+          trail_id?: number | null
         }
         Relationships: [
           {
@@ -169,42 +215,6 @@ export type Database = {
             columns: ["trail_id"]
             isOneToOne: false
             referencedRelation: "trails"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      friendships: {
-        Row: {
-          addressee_id: string
-          created_at: string
-          requester_id: string
-          status: string
-        }
-        Insert: {
-          addressee_id: string
-          created_at?: string
-          requester_id: string
-          status?: string
-        }
-        Update: {
-          addressee_id?: string
-          created_at?: string
-          requester_id?: string
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "friendships_addressee_id_fkey"
-            columns: ["addressee_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "friendships_requester_id_fkey"
-            columns: ["requester_id"]
-            isOneToOne: false
-            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -241,6 +251,42 @@ export type Database = {
           {
             foreignKeyName: "daily_activity_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          requester_id: string
+          status: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          requester_id: string
+          status?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          requester_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_addressee_id_fkey"
+            columns: ["addressee_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_requester_id_fkey"
+            columns: ["requester_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -356,47 +402,52 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      weekly_leaderboard: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          user_id: string
-          display_name: string
-          username: string
-          total_miles: number
-        }[]
+      can_view_challenge: {
+        Args: { p_challenge_id: number; p_user_id: string }
+        Returns: boolean
       }
+      delete_own_account: { Args: never; Returns: undefined }
       friends_weekly_leaderboard: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
-          user_id: string
           display_name: string
-          username: string
           total_miles: number
+          user_id: string
+          username: string
         }[]
       }
       get_profile: {
         Args: { p_user_id: string }
         Returns: {
-          user_id: string
-          username: string
+          avatar_url: string
+          best_day_date: string
+          best_day_miles: number
+          best_month: string
+          best_month_miles: number
+          best_week_miles: number
+          best_week_start: string
+          current_month_miles: number
+          current_month_steps: number
           display_name: string
-          avatar_url: string | null
           is_owner: boolean
+          lifetime_miles: number
+          lifetime_steps: number
           profile_visibility: string
           show_lifetime_miles: boolean
           show_lifetime_steps: boolean
           show_monthly_stats: boolean
           show_records: boolean
-          lifetime_miles: number | null
-          lifetime_steps: number | null
-          current_month_miles: number | null
-          current_month_steps: number | null
-          best_day_miles: number | null
-          best_day_date: string | null
-          best_week_miles: number | null
-          best_week_start: string | null
-          best_month_miles: number | null
-          best_month: string | null
+          user_id: string
+          username: string
+        }[]
+      }
+      weekly_leaderboard: {
+        Args: never
+        Returns: {
+          display_name: string
+          total_miles: number
+          user_id: string
+          username: string
         }[]
       }
     }

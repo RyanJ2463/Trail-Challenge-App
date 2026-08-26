@@ -9,17 +9,16 @@ import {
   View,
 } from 'react-native';
 import { Link, useFocusEffect, useRouter } from 'expo-router';
-import { useAuth } from '../../lib/auth-context';
-import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../../lib/auth-context';
 import {
   joinChallenge,
   listDiscoverableChallenges,
   listMyChallenges,
   type ChallengeWithTrail,
-} from '../../lib/challenges';
-import { activityTypeMeta } from '../../lib/activityTypes';
-import { isHealthSyncAvailable, requestHealthAuthorization, syncHealthData } from '../../lib/healthSync';
-import { colors, radius, spacing, typography } from '../../lib/theme';
+} from '../../../lib/challenges';
+import { activityTypeMeta } from '../../../lib/activityTypes';
+import { isHealthSyncAvailable, requestHealthAuthorization, syncHealthData } from '../../../lib/healthSync';
+import { colors, radius, spacing, typography } from '../../../lib/theme';
 
 export default function Home() {
   const { session } = useAuth();
@@ -94,26 +93,8 @@ export default function Home() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
     >
       <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Trail Challenge</Text>
-          <Text style={styles.greetingSub}>🥾 Ready for a few more miles?</Text>
-        </View>
-        <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => router.push('/leaderboard')} hitSlop={8}>
-            <Text style={styles.headerLink}>🏆 Leaderboard</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/friends')} hitSlop={8}>
-            <Text style={styles.headerLink}>👥 Friends</Text>
-          </TouchableOpacity>
-          {userId && (
-            <TouchableOpacity onPress={() => router.push(`/profile/${userId}`)} hitSlop={8}>
-              <Text style={styles.headerLink}>👤 Profile</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity onPress={() => supabase.auth.signOut()} hitSlop={8}>
-            <Text style={styles.signOut}>Sign out</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.greeting}>Trail Challenge</Text>
+        <Text style={styles.greetingSub}>🥾 Ready for a few more miles?</Text>
       </View>
 
       <TouchableOpacity
@@ -172,7 +153,7 @@ export default function Home() {
                   </View>
                   <Text style={styles.cardSubtitle}>
                     {activityTypeMeta(challenge.activity_type).emoji}{' '}
-                    {challenge.trails?.name ?? 'Unknown trail'}
+                    {challenge.trails?.name ?? 'Open goal — no trail'}
                     {challenge.trails ? ` · ${challenge.trails.total_distance_miles} mi` : ''}
                   </Text>
                   <Text style={styles.cardMeta}>Started {challenge.start_date}</Text>
@@ -192,7 +173,7 @@ export default function Home() {
                 <Text style={styles.cardTitle}>{challenge.name}</Text>
                 <Text style={styles.cardSubtitle}>
                   {activityTypeMeta(challenge.activity_type).emoji}{' '}
-                  {challenge.trails?.name ?? 'Unknown trail'}
+                  {challenge.trails?.name ?? 'Open goal — no trail'}
                   {challenge.trails ? ` · ${challenge.trails.total_distance_miles} mi` : ''}
                 </Text>
                 <TouchableOpacity
@@ -225,9 +206,6 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl + spacing.lg,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: spacing.xl,
   },
   greeting: {
@@ -237,18 +215,6 @@ const styles = StyleSheet.create({
   greetingSub: {
     color: colors.textMuted,
     marginTop: 2,
-  },
-  headerActions: {
-    alignItems: 'flex-end',
-    gap: spacing.sm,
-  },
-  headerLink: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  signOut: {
-    color: colors.primary,
-    fontWeight: '600',
   },
   startButton: {
     backgroundColor: colors.primary,

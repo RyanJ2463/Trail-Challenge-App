@@ -12,6 +12,8 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../../../../lib/auth-context';
 import { createChallenge, listTrails } from '../../../../lib/challenges';
+import { sendChallengeInvite } from '../../../../lib/challengeInvites';
+import { listFriends, type UserProfile } from '../../../../lib/friends';
 import { activityTypeMeta, type ActivityType } from '../../../../lib/activityTypes';
 import type { Tables } from '../../../../lib/database.types';
 import { colors, radius, spacing, typography } from '../../../../lib/theme';
@@ -64,22 +66,50 @@ export default function NewChallengeDetails() {
   const [loadingTrails, setLoadingTrails] = useState(true);
   const [name, setName] = useState('');
   const [trailId, setTrailId] = useState<number | null>(null);
+  const [trailPickerOpen, setTrailPickerOpen] = useState(true);
+  const [trailQuery, setTrailQuery] = useState('');
   const [startDate, setStartDate] = useState(todayLocal());
   const [durationOption, setDurationOption] = useState<DurationOption>('open');
   const [customEndDate, setCustomEndDate] = useState(todayLocal());
   const [isPublic, setIsPublic] = useState(true);
+  const [friends, setFriends] = useState<UserProfile[]>([]);
+  const [loadingFriends, setLoadingFriends] = useState(false);
+  const [invitedFriendIds, setInvitedFriendIds] = useState<Set<string>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     listTrails()
-      .then((data) => {
-        setTrails(data);
-        setTrailId((current) => current ?? data[0]?.id ?? null);
-      })
+      .then(setTrails)
       .catch((err) => setError(err.message))
       .finally(() => setLoadingTrails(false));
   }, []);
+
+  useEffect(() => {
+    if (isPublic || !userId || friends.length > 0) return;
+    setLoadingFriends(true);
+    listFriends(userId)
+      .then(setFriends)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Could not load friends.'))
+      .finally(() => setLoadingFriends(false));
+  }, [isPublic, userId, friends.length]);
+
+  const toggleInvite = (friendId: string) => {
+    setInvitedFriendIds((current) => {
+      const next = new Set(current);
+      if (next.has(friendId)) {
+        next.delete(friendId);
+      } else {
+        next.add(friendId);
+      }
+      return next;
+    });
+  };
+
+  const selectedTrail = trails.find((t) => t.id === trailId) ?? null;
+  const filteredTrails = trails.filter((t) =>
+    t.name.toLowerCase().includes(trailQuery.trim().toLowerCase())
+  );
 
   const durationPreset = DURATION_OPTIONS.find((o) => o.key === durationOption);
   const endDate =
@@ -90,7 +120,7 @@ export default function NewChallengeDetails() {
         : addDays(startDate, durationPreset?.days ?? 0);
 
   const handleCreate = async () => {
-    if (!userId || !trailId) return;
+    if (!userId) return;
     if (!name.trim()) {
       setError('Give your challenge a name.');
       return;
@@ -107,6 +137,15 @@ export default function NewChallengeDetails() {
         isPublic,
         createdBy: userId,
       });
+
+      if (!isPublic && invitedFriendIds.size > 0) {
+        await Promise.all(
+          [...invitedFriendIds].map((friendId) =>
+            sendChallengeInvite(challenge.id, userId, friendId)
+          )
+        );
+      }
+
       // Drop the whole "start a challenge" flow (picker + this form) from
       // history rather than replace()-ing just this screen, so the new
       // challenge's back button returns to Home instead of the picker.
@@ -142,54 +181,125 @@ export default function NewChallengeDetails() {
         onChangeText={setName}
       />
 
-      <Text style={styles.label}>Trail</Text>
-      {trails.length === 0 ? (
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyText}>
-            No trails are set up yet — ask an admin to add one before creating a challenge.
-          </Text>
-        </View>
+      <Text style={styles.label}>Trail (optional)</Text>
+      {!trailPickerOpen ? (
+        <TouchableOpacity
+          style={styles.activityRow}
+          onPress={() => setTrailPickerOpen(true)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.trailOptionText}>
+            <Text style={styles.activityLabel}>
+              {selectedTrail ? `🥾 ${selectedTrail.name}` : '🎯 No trail — open goal'}
+            </Text>
+            {selectedTrail?.description && (
+              <Text style={styles.trailSummaryDescription} numberOfLines={1}>
+                {selectedTrail.description}
+              </Text>
+            )}
+          </View>
+          {selectedTrail && (
+            <Text style={styles.trailSummaryMeta}>{selectedTrail.total_distance_miles} mi</Text>
+          )}
+          <Text style={styles.activityChange}>Change</Text>
+        </TouchableOpacity>
       ) : (
-        <View style={styles.trailList}>
-          {trails.map((trail) => (
-            <TouchableOpacity
-              key={trail.id}
-              style={[styles.trailOption, trailId === trail.id && styles.trailOptionSelected]}
-              onPress={() => setTrailId(trail.id)}
-              activeOpacity={0.8}
-            >
-              <View style={styles.trailOptionText}>
-                <Text
-                  style={[
-                    styles.trailOptionName,
-                    trailId === trail.id && styles.trailOptionTextSelected,
-                  ]}
-                >
-                  🥾 {trail.name}
-                </Text>
-                {trail.description && (
-                  <Text
-                    style={[
-                      styles.trailOptionDescription,
-                      trailId === trail.id && styles.trailOptionTextSelected,
-                    ]}
-                    numberOfLines={2}
-                  >
-                    {trail.description}
-                  </Text>
-                )}
-              </View>
+        <>
+          <TouchableOpacity
+            style={[styles.trailOption, trailId === null && styles.trailOptionSelected]}
+            onPress={() => {
+              setTrailId(null);
+              setTrailQuery('');
+              setTrailPickerOpen(false);
+            }}
+            activeOpacity={0.8}
+          >
+            <View style={styles.trailOptionText}>
+              <Text
+                style={[styles.trailOptionName, trailId === null && styles.trailOptionTextSelected]}
+              >
+                🎯 No trail
+              </Text>
               <Text
                 style={[
-                  styles.trailOptionMeta,
-                  trailId === trail.id && styles.trailOptionTextSelected,
+                  styles.trailOptionDescription,
+                  trailId === null && styles.trailOptionTextSelected,
                 ]}
               >
-                {trail.total_distance_miles} mi
+                Just track total distance — no route or map.
               </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+            </View>
+          </TouchableOpacity>
+
+          {trails.length > 0 && (
+            <>
+              <TextInput
+                style={[styles.input, styles.trailSearchInput]}
+                placeholder="Search trails, races, courses…"
+                placeholderTextColor={colors.textFaint}
+                value={trailQuery}
+                onChangeText={setTrailQuery}
+              />
+              {filteredTrails.length === 0 ? (
+                <View style={[styles.emptyCard, styles.trailSearchEmpty]}>
+                  <Text style={styles.emptyText}>No trails match &quot;{trailQuery}&quot;.</Text>
+                </View>
+              ) : (
+                <View style={styles.trailDropdown}>
+                  <ScrollView
+                    style={styles.trailDropdownScroll}
+                    contentContainerStyle={styles.trailDropdownContent}
+                    nestedScrollEnabled
+                    keyboardShouldPersistTaps="handled"
+                  >
+                    {filteredTrails.map((trail) => (
+                      <TouchableOpacity
+                        key={trail.id}
+                        style={[styles.trailOption, trailId === trail.id && styles.trailOptionSelected]}
+                        onPress={() => {
+                          setTrailId(trail.id);
+                          setTrailQuery('');
+                          setTrailPickerOpen(false);
+                        }}
+                        activeOpacity={0.8}
+                      >
+                        <View style={styles.trailOptionText}>
+                          <Text
+                            style={[
+                              styles.trailOptionName,
+                              trailId === trail.id && styles.trailOptionTextSelected,
+                            ]}
+                          >
+                            🥾 {trail.name}
+                          </Text>
+                          {trail.description && (
+                            <Text
+                              style={[
+                                styles.trailOptionDescription,
+                                trailId === trail.id && styles.trailOptionTextSelected,
+                              ]}
+                              numberOfLines={2}
+                            >
+                              {trail.description}
+                            </Text>
+                          )}
+                        </View>
+                        <Text
+                          style={[
+                            styles.trailOptionMeta,
+                            trailId === trail.id && styles.trailOptionTextSelected,
+                          ]}
+                        >
+                          {trail.total_distance_miles} mi
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+            </>
+          )}
+        </>
       )}
 
       <Text style={styles.label}>Start date</Text>
@@ -253,10 +363,56 @@ export default function NewChallengeDetails() {
         />
       </View>
 
+      {!isPublic && (
+        <>
+          <Text style={styles.label}>Invite friends</Text>
+          {loadingFriends ? (
+            <ActivityIndicator color={colors.primary} />
+          ) : friends.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyText}>
+                No friends yet — add some from the Friends tab to invite them here.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.trailList}>
+              {friends.map((friend) => {
+                const selected = invitedFriendIds.has(friend.id);
+                return (
+                  <TouchableOpacity
+                    key={friend.id}
+                    style={[styles.trailOption, selected && styles.trailOptionSelected]}
+                    onPress={() => toggleInvite(friend.id)}
+                    activeOpacity={0.8}
+                  >
+                    <Text
+                      style={[
+                        styles.trailOptionName,
+                        selected && styles.trailOptionTextSelected,
+                      ]}
+                    >
+                      {friend.display_name}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.trailOptionMeta,
+                        selected && styles.trailOptionTextSelected,
+                      ]}
+                    >
+                      {selected ? 'Invited' : 'Invite'}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
+        </>
+      )}
+
       <TouchableOpacity
-        style={[styles.button, (submitting || !trailId) && styles.buttonDisabled]}
+        style={[styles.button, (submitting || trailPickerOpen) && styles.buttonDisabled]}
         onPress={handleCreate}
-        disabled={submitting || !trailId}
+        disabled={submitting || trailPickerOpen}
         activeOpacity={0.85}
       >
         <Text style={styles.buttonText}>{submitting ? 'Creating…' : 'Create challenge'}</Text>
@@ -346,6 +502,39 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 13,
     marginTop: spacing.sm,
+  },
+  trailSummaryDescription: {
+    fontSize: 13,
+    color: colors.primaryDark,
+    marginTop: 2,
+  },
+  trailSummaryMeta: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primaryDark,
+    marginRight: spacing.sm,
+  },
+  trailSearchInput: {
+    marginTop: spacing.sm,
+  },
+  trailSearchEmpty: {
+    marginTop: spacing.sm,
+  },
+  trailDropdown: {
+    marginTop: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    backgroundColor: colors.background,
+    maxHeight: 320,
+    overflow: 'hidden',
+  },
+  trailDropdownScroll: {
+    maxHeight: 320,
+  },
+  trailDropdownContent: {
+    gap: spacing.sm,
+    padding: spacing.sm,
   },
   trailList: {
     gap: spacing.sm,

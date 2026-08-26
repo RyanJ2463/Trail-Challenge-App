@@ -43,6 +43,7 @@ export async function getUserTrailPosition(
     .eq('id', challengeId)
     .single();
   if (challengeError) throw challengeError;
+  if (challenge.trail_id === null) return null;
 
   const { data: points, error: pointsError } = await supabase
     .from('trail_points')

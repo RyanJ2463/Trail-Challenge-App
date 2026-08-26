@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Link, useFocusEffect } from 'expo-router';
-import { useAuth } from '../../lib/auth-context';
-import { getFriendsWeeklyLeaderboard, getWeeklyLeaderboard, type LeaderboardEntry } from '../../lib/leaderboard';
-import { colors, radius, spacing, typography } from '../../lib/theme';
+import { useAuth } from '../../../lib/auth-context';
+import { getFriendsWeeklyLeaderboard, getWeeklyLeaderboard, type LeaderboardEntry } from '../../../lib/leaderboard';
+import { colors, radius, spacing, typography } from '../../../lib/theme';
 
 const RANK_MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
