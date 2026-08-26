@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    *{ box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      background: #f6f7f2;
+      color: #1c231d;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #2f6f4f; text-decoration: none; font-weight: 600; }
+    a:hover { color: #234f39; }
+    .card { background: #fff; border: 1px solid #e2e5dd; border-radius: 16px; padding: 24px; }
+    .h { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+    .hsub { font-size: 13px; color: #5c6b5e; margin: 0 0 20px; }
+    .cap { font-size: 12px; color: #5c6b5e; line-height: 1.5; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  </style>
+</helmet>
+
+<div style="width: 1120px; min-height: 1220px; background: #f6f7f2; padding: 32px;">
+
+  <div style="font-size: 22px; font-weight: 700;">Challenge map &amp; standings</div>
+  <div style="font-size: 13px; color: #5c6b5e; margin-top: 4px; margin-bottom: 24px;">Build spec &middot; tokens from <span class="mono">lib/theme.ts</span>, marker + route styling from <span class="mono">app/(app)/challenge/[id].tsx</span></div>
+
+  <div style="display: flex; flex-direction: column; gap: 20px;">
+
+    <!-- MARKERS -->
+    <div class="card">
+      <p class="h">Map markers</p>
+      <p class="hsub">One marker per participant, anchored to their interpolated trail coordinate. Render with a ShapeSource + SymbolLayer, not one PointAnnotation each.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
+
+        <div style="width: 150px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="height: 56px; display: flex; align-items: flex-end;">
+            <div style="width: 22px; height: 22px; border-radius: 11px; background: rgba(47,111,79,0.25); display: flex; align-items: center; justify-content: center;">
+              <div style="width: 14px; height: 14px; border-radius: 7px; background: #2f6f4f; border: 2px solid #fff;"></div>
+            </div>
+          </div>
+          <p class="cap" style="text-align: center;"><strong>You</strong><br>14px dot + halo &middot; #2f6f4f<br>(unchanged from today)</p>
+        </div>
+
+        <div style="width: 150px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="height: 56px; display: flex; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.28));">
+              <div style="width: 26px; height: 26px; border-radius: 14px; background: #47688c; border: 2px solid #fff; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">ML</div>
+              <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid #fff; margin-top: -1px;"></div>
+            </div>
+          </div>
+          <p class="cap" style="text-align: center;"><strong>Friend</strong><br>26px initials pin &middot; #47688c</p>
+        </div>
+
+        <div style="width: 150px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="height: 56px; display: flex; align-items: flex-end;">
+            <div style="width: 12px; height: 12px; border-radius: 7px; background: #fff; border: 2.5px solid #8b9a8c;"></div>
+          </div>
+          <p class="cap" style="text-align: center;"><strong>Other participant</strong><br>12px hollow dot &middot; #8b9a8c<br>(public-challenge strangers)</p>
+        </div>
+
+        <div style="width: 170px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="height: 56px; display: flex; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="background: #fff; border-radius: 9px; padding: 5px 9px; box-shadow: 0 2px 8px rgba(0,0,0,0.18); white-space: nowrap; font-size: 12px;"><strong>Priya</strong><span style="color: #5c6b5e;"> &middot; 128.6 mi</span></div>
+              <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #fff; margin-bottom: 3px;"></div>
+              <div style="width: 26px; height: 26px; border-radius: 14px; background: #47688c; border: 2px solid #fff; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">PS</div>
+            </div>
+          </div>
+          <p class="cap" style="text-align: center;"><strong>Selected</strong><br>tap a marker &rarr; name + miles callout</p>
+        </div>
+
+        <div style="width: 150px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="height: 56px; display: flex; align-items: flex-end;">
+            <div style="min-width: 24px; height: 24px; padding: 0 5px; border-radius: 13px; background: #2f6f4f; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.28); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700;">3</div>
+          </div>
+          <p class="cap" style="text-align: center;"><strong>Cluster</strong><br>markers within ~24px collapse to a count</p>
+        </div>
+
+        <div style="width: 150px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="height: 56px; display: flex; align-items: flex-end;">
+            <svg width="20" height="26" viewBox="0 0 20 26" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="0" width="2" height="26" fill="#1c231d"/>
+              <rect x="4" y="1" width="13" height="9" fill="#fff" stroke="#1c231d" stroke-width="1"/>
+              <path d="M4 1h4.3v3H4z M12.6 1h4.3v3h-4.3z M8.3 4h4.3v3H8.3z M4 7h4.3v3H4z M12.6 7h4.3v3h-4.3z" fill="#1c231d"/>
+            </svg>
+          </div>
+          <p class="cap" style="text-align: center;"><strong>Finish</strong><br>pinned at the trail's last point</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ROW STATES -->
+    <div class="card">
+      <p class="h">Standings row</p>
+      <p class="hsub">Rank slot 24px &middot; avatar 36px &middot; flexible name/position &middot; right-aligned miles. Card matches the existing leaderboard row (surface, 1px #e2e5dd, radius 12).</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+
+        <div style="width: 360px;">
+          <div style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e2e5dd; border-radius: 12px; padding: 12px 14px;">
+            <div style="width: 24px; text-align: center; font-size: 14px; font-weight: 700; color: #5c6b5e;">4</div>
+            <div style="width: 36px; height: 36px; border-radius: 18px; background: #e5efe8; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #234f39;">PS</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600;">Priya Shah</div>
+              <div style="font-size: 12px; color: #5c6b5e;">Mile 129 &middot; Glencliff</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 15px; font-weight: 700; color: #234f39;">128.6<span style="font-size: 12px; font-weight: 500; color: #8b9a8c;"> mi</span></div>
+              <div style="font-size: 11px; color: #8b9a8c;">+14.2 this wk</div>
+            </div>
+          </div>
+          <p class="cap" style="margin-top: 8px;">Default</p>
+        </div>
+
+        <div style="width: 360px;">
+          <div style="display: flex; align-items: center; gap: 12px; background: #e5efe8; border: 1px solid #2f6f4f; border-radius: 12px; padding: 12px 14px;">
+            <div style="width: 24px; text-align: center; font-size: 16px;">&#129353;</div>
+            <div style="width: 36px; height: 36px; border-radius: 18px; background: #fff; border: 2px solid #2f6f4f; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #234f39;">You</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 700; color: #234f39;">You</div>
+              <div style="font-size: 12px; color: #5c6b5e;">Mile 142 &middot; past Franconia Ridge</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 15px; font-weight: 700; color: #234f39;">142.3<span style="font-size: 12px; font-weight: 500; color: #8b9a8c;"> mi</span></div>
+              <div style="font-size: 11px; color: #8b9a8c;">+16.1 this wk</div>
+            </div>
+          </div>
+          <p class="cap" style="margin-top: 8px;">Current user &middot; #e5efe8 fill, #2f6f4f border (matches <span class="mono">rowMe</span>)</p>
+        </div>
+
+        <div style="width: 360px;">
+          <div style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e2e5dd; border-radius: 12px; padding: 12px 14px;">
+            <div style="width: 24px; text-align: center; font-size: 16px;">&#129351;</div>
+            <div style="width: 36px; height: 36px; border-radius: 18px; background: #e5efe8; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #234f39; position: relative;">
+              DR
+              <span style="position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border-radius: 6px; background: #47688c; border: 2px solid #fff;"></span>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600;">Dana Rivera</div>
+              <div style="font-size: 12px; color: #2f6f4f; font-weight: 600;">Finished &middot; Aug 20</div>
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #234f39; display: inline-flex; align-items: center; gap: 3px;">
+              218<span style="font-size: 12px; font-weight: 500; color: #8b9a8c;">mi</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2f6f4f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+          </div>
+          <p class="cap" style="margin-top: 8px;">Finished &middot; blue dot on avatar = friend</p>
+        </div>
+
+        <div style="width: 360px;">
+          <div style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e2e5dd; border-radius: 12px; padding: 12px 14px; opacity: 0.75;">
+            <div style="width: 24px; text-align: center; font-size: 14px; font-weight: 700; color: #8b9a8c;">8</div>
+            <div style="width: 36px; height: 36px; border-radius: 18px; background: #eef0ea; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #8b9a8c;">IC</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600; color: #5c6b5e;">Ivy Chen</div>
+              <div style="font-size: 12px; color: #8b9a8c;">Waiting for first Health sync</div>
+            </div>
+            <div style="font-size: 12px; font-weight: 600; color: #8b9a8c;">&mdash;</div>
+          </div>
+          <p class="cap" style="margin-top: 8px;">Joined, no activity rows yet</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LEGEND + PALETTE -->
+    <div style="display: flex; gap: 20px;">
+      <div class="card" style="flex: 1;">
+        <p class="h">Map legend</p>
+        <p class="hsub">Fixed bottom-left, above the Mapbox attribution.</p>
+        <div style="display: inline-flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.95); border: 1px solid #e2e5dd; border-radius: 10px; padding: 10px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.12);">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;"><span style="width: 10px; height: 10px; border-radius: 5px; background: #2f6f4f; box-shadow: 0 0 0 2px #fff, 0 0 0 3px #2f6f4f;"></span>You</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;"><span style="width: 10px; height: 10px; border-radius: 5px; background: #47688c;"></span>Friends</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;"><span style="width: 10px; height: 10px; border-radius: 5px; background: #fff; border: 2px solid #8b9a8c;"></span>Others</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+            <svg width="10" height="12" viewBox="0 0 10 12"><rect x="0" y="0" width="1.4" height="12" fill="#1c231d"/><rect x="1.4" y="0.5" width="7.5" height="5.5" fill="#1c231d"/></svg>
+            Finished
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="flex: 1;">
+        <p class="h">Palette</p>
+        <p class="hsub">One color added to <span class="mono">theme.ts</span>: <span class="mono">friend</span>.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+          <div style="width: 132px;"><div style="height: 44px; border-radius: 8px; background: #2f6f4f;"></div><p class="cap" style="margin-top: 6px;">primary #2f6f4f<br>You / completed route</p></div>
+          <div style="width: 132px;"><div style="height: 44px; border-radius: 8px; background: #47688c;"></div><p class="cap" style="margin-top: 6px;"><strong>friend #47688c</strong><br>new token</p></div>
+          <div style="width: 132px;"><div style="height: 44px; border-radius: 8px; background: #8b9a8c;"></div><p class="cap" style="margin-top: 6px;">textFaint #8b9a8c<br>Others</p></div>
+          <div style="width: 132px;"><div style="height: 44px; border-radius: 8px; background: #c7d6cb;"></div><p class="cap" style="margin-top: 6px;">route #c7d6cb<br>remaining route</p></div>
+          <div style="width: 132px;"><div style="height: 44px; border-radius: 8px; background: #e5efe8; border: 1px solid #e2e5dd;"></div><p class="cap" style="margin-top: 6px;">primaryMuted #e5efe8<br>your-row fill</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA -->
+    <div class="card">
+      <p class="h">Data each row needs</p>
+      <p class="hsub">Client can't read another user's <span class="mono">daily_activity</span> (owner-only RLS). Add one SECURITY DEFINER RPC.</p>
+      <div style="background: #f6f7f2; border-radius: 10px; padding: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.7; color: #234f39; white-space: pre-wrap;">challenge_standings(p_challenge_id bigint) returns table (
+  user_id uuid, display_name text, username text, avatar_url text,
+  is_friend boolean, is_me boolean,
+  cumulative_miles numeric,      -- SUM(daily_activity.distance_miles)
+  week_miles numeric,            -- trailing 7 days
+  last_synced_at timestamptz,
+  finished boolean
+)
+-- WHERE activity_date BETWEEN challenge.start_date
+--   AND COALESCE(challenge.end_date, CURRENT_DATE)
+-- AND daily_activity.activity_type = challenge.activity_type</div>
+      <p class="cap" style="margin-top: 14px;">
+        Then <span class="mono">trailPosition.ts</span> already maps <span class="mono">cumulative_miles</span> &rarr; lat/lng + nearest <span class="mono">trail_points.label</span> for the marker and the "Mile 142 &middot; past Franconia Ridge" line &mdash; run it per row.
+      </p>
+      <p class="cap" style="margin-top: 10px;">
+        <strong>Activity type:</strong> add <span class="mono">activity_type</span> to <span class="mono">daily_activity</span> and sync per-type from HealthKit (<span class="mono">DistanceWalkingRunning</span>, <span class="mono">DistanceCycling</span>) / Health Connect. The RPC then filters to the challenge's type &mdash; so a running challenge counts runs only.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1120,"height":1220}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
