@@ -7,6 +7,8 @@ export default function AppLayout() {
       <Stack.Screen name="challenge/new/index" options={{ title: 'Start a Challenge' }} />
       <Stack.Screen name="challenge/new/details" options={{ title: 'Challenge Details' }} />
       <Stack.Screen name="challenge/[id]" options={{ title: '' }} />
+      <Stack.Screen name="leaderboard" options={{ title: 'Weekly Leaderboard' }} />
+      <Stack.Screen name="friends" options={{ title: 'Friends' }} />
     </Stack>
   );
 }

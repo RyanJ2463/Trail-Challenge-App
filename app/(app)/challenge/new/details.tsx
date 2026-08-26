@@ -16,13 +16,41 @@ import { activityTypeMeta, type ActivityType } from '../../../../lib/activityTyp
 import type { Tables } from '../../../../lib/database.types';
 import { colors, radius, spacing, typography } from '../../../../lib/theme';
 
-// YYYY-MM-DD in the device's local timezone (Date#toISOString is UTC, which
-// can roll the date backward/forward near midnight).
-function todayLocal(): string {
-  const now = new Date();
-  const offset = now.getTimezoneOffset();
-  return new Date(now.getTime() - offset * 60000).toISOString().slice(0, 10);
+// Dates are handled as plain YYYY-MM-DD calendar values throughout this
+// screen (no time-of-day, no timezone conversion) so "add 7 days" always
+// lands on the same calendar date regardless of the device's timezone.
+function parseDateOnly(dateStr: string): Date {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, (month ?? 1) - 1, day ?? 1);
 }
+
+function formatDateOnly(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function todayLocal(): string {
+  return formatDateOnly(new Date());
+}
+
+function addDays(dateStr: string, days: number): string {
+  const date = parseDateOnly(dateStr);
+  date.setDate(date.getDate() + days);
+  return formatDateOnly(date);
+}
+
+type DurationOption = 'open' | '1w' | '2w' | '3w' | '4w' | 'custom';
+
+const DURATION_OPTIONS: { key: DurationOption; label: string; days?: number }[] = [
+  { key: 'open', label: 'Open-ended' },
+  { key: '1w', label: '1 week', days: 7 },
+  { key: '2w', label: '2 weeks', days: 14 },
+  { key: '3w', label: '3 weeks', days: 21 },
+  { key: '4w', label: '4 weeks', days: 28 },
+  { key: 'custom', label: 'Custom' },
+];
 
 export default function NewChallengeDetails() {
   const router = useRouter();
@@ -37,6 +65,8 @@ export default function NewChallengeDetails() {
   const [name, setName] = useState('');
   const [trailId, setTrailId] = useState<number | null>(null);
   const [startDate, setStartDate] = useState(todayLocal());
+  const [durationOption, setDurationOption] = useState<DurationOption>('open');
+  const [customEndDate, setCustomEndDate] = useState(todayLocal());
   const [isPublic, setIsPublic] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +80,14 @@ export default function NewChallengeDetails() {
       .catch((err) => setError(err.message))
       .finally(() => setLoadingTrails(false));
   }, []);
+
+  const durationPreset = DURATION_OPTIONS.find((o) => o.key === durationOption);
+  const endDate =
+    durationOption === 'open'
+      ? null
+      : durationOption === 'custom'
+        ? customEndDate
+        : addDays(startDate, durationPreset?.days ?? 0);
 
   const handleCreate = async () => {
     if (!userId || !trailId) return;
@@ -65,7 +103,7 @@ export default function NewChallengeDetails() {
         trailId,
         activityType,
         startDate,
-        endDate: null,
+        endDate,
         isPublic,
         createdBy: userId,
       });
@@ -94,7 +132,7 @@ export default function NewChallengeDetails() {
       <Text style={styles.label}>Challenge name</Text>
       <TextInput
         style={styles.input}
-        placeholder="AT Thru-Hike w/ the boys"
+        placeholder="testing"
         placeholderTextColor={colors.textFaint}
         value={name}
         onChangeText={setName}
@@ -158,6 +196,43 @@ export default function NewChallengeDetails() {
         value={startDate}
         onChangeText={setStartDate}
       />
+
+      <Text style={styles.label}>Duration</Text>
+      <View style={styles.startOptionList}>
+        {DURATION_OPTIONS.map((option) => (
+          <TouchableOpacity
+            key={option.key}
+            style={[
+              styles.startOptionPill,
+              durationOption === option.key && styles.startOptionPillSelected,
+            ]}
+            onPress={() => setDurationOption(option.key)}
+            activeOpacity={0.8}
+          >
+            <Text
+              style={[
+                styles.startOptionText,
+                durationOption === option.key && styles.startOptionTextSelected,
+              ]}
+            >
+              {option.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      {durationOption === 'custom' ? (
+        <TextInput
+          style={[styles.input, styles.customDateInput]}
+          placeholder="YYYY-MM-DD"
+          placeholderTextColor={colors.textFaint}
+          value={customEndDate}
+          onChangeText={setCustomEndDate}
+        />
+      ) : (
+        <Text style={styles.startDatePreview}>
+          {endDate ? `Ends ${endDate}` : 'No end date — runs until you close it out'}
+        </Text>
+      )}
 
       <View style={styles.switchRow}>
         <View style={styles.switchLabelGroup}>
@@ -234,6 +309,39 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     fontSize: 16,
     color: colors.text,
+  },
+  startOptionList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  startOptionPill: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  startOptionPillSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  startOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  startOptionTextSelected: {
+    color: colors.white,
+  },
+  customDateInput: {
+    marginTop: spacing.sm,
+  },
+  startDatePreview: {
+    color: colors.textMuted,
+    fontSize: 13,
+    marginTop: spacing.sm,
   },
   trailList: {
     gap: spacing.sm,

@@ -98,9 +98,17 @@ export default function Home() {
           <Text style={styles.greeting}>Trail Challenge</Text>
           <Text style={styles.greetingSub}>🥾 Ready for a few more miles?</Text>
         </View>
-        <TouchableOpacity onPress={() => supabase.auth.signOut()} hitSlop={8}>
-          <Text style={styles.signOut}>Sign out</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={() => router.push('/leaderboard')} hitSlop={8}>
+            <Text style={styles.headerLink}>🏆 Leaderboard</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/friends')} hitSlop={8}>
+            <Text style={styles.headerLink}>👥 Friends</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => supabase.auth.signOut()} hitSlop={8}>
+            <Text style={styles.signOut}>Sign out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TouchableOpacity
@@ -225,10 +233,17 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 2,
   },
+  headerActions: {
+    alignItems: 'flex-end',
+    gap: spacing.sm,
+  },
+  headerLink: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
   signOut: {
     color: colors.primary,
     fontWeight: '600',
-    paddingTop: 4,
   },
   startButton: {
     backgroundColor: colors.primary,
