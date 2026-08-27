@@ -406,6 +406,20 @@ export type Database = {
         Args: { p_challenge_id: number; p_user_id: string }
         Returns: boolean
       }
+      challenge_standings: {
+        Args: { p_challenge_id: number }
+        Returns: {
+          avatar_url: string
+          cumulative_miles: number
+          display_name: string
+          is_friend: boolean
+          is_me: boolean
+          last_synced_at: string
+          user_id: string
+          username: string
+          week_miles: number
+        }[]
+      }
       delete_own_account: { Args: never; Returns: undefined }
       friends_weekly_leaderboard: {
         Args: never

@@ -9,6 +9,17 @@ this is a shared working doc.
 
 ---
 
+## 0. Progress log
+
+| Date | Task | Status | PR |
+| --- | --- | --- | --- |
+| 2026-08-26 | **1.1** `challenge_standings()` RPC | ✅ merged-pending — verified on PG17 against all migrations + seed | #3 |
+| 2026-08-26 | **1.2** DB types for the RPC | 🟡 partial — `challenge_standings` entry hand-added to `lib/database.types.ts` in #3; needs a real `supabase gen types --linked` regen to confirm | #3 |
+
+Next up: **1.3** `lib/challengeStandings.ts`.
+
+---
+
 ## 1. Why this doc exists
 
 The design mockups define a target the app doesn't hit yet: **every participant
@@ -27,7 +38,7 @@ health-sync rework.
 | Map markers | Current user only (`PointAnnotation`) | Every participant: you / friends / others / finished, legend, tap-callout |
 | Standings | Name chips, unranked | Ranked list: rank, avatar, trail position, miles, weekly delta, you-highlighted |
 | "See all" screen | — | Full standings: per-hiker progress bar, weekly delta, sync state |
-| Per-participant mileage | **Impossible from client** (`daily_activity` is owner-only RLS) | `challenge_standings(challenge_id)` SECURITY DEFINER RPC |
+| Per-participant mileage | ✅ **`challenge_standings(challenge_id)` RPC landed** (#3) — client wiring next | `challenge_standings(challenge_id)` SECURITY DEFINER RPC |
 | `activity_type` | Cosmetic — every challenge sums all walking+running distance | Running challenge counts runs only, etc. |
 | `challenge_progress` table | Exists, nothing writes to it | Decide: populate or drop |
 
@@ -75,8 +86,9 @@ health-sync rework.
 
 ## 4. Gap analysis
 
-1. **No backend path to another user's mileage.** Blocking. Everything else waits
-   on the RPC (or on populating `challenge_progress`).
+1. ~~**No backend path to another user's mileage.**~~ ✅ Resolved by the
+   `challenge_standings()` RPC (#3) — live SECURITY DEFINER, no
+   `challenge_progress` table needed.
 2. **`activity_type` is not in `daily_activity`.** Making it "real" needs a schema
    change *and* a HealthKit rework (the combined walk+run quantity type can't be
    split — running attribution needs `HKWorkout` samples). See §7.
@@ -98,9 +110,9 @@ running distance counts"). ~2–3 focused PRs.
 
 | # | Task | Files | Done when |
 | --- | --- | --- | --- |
-| **1.1** | `challenge_standings(p_challenge_id bigint)` RPC — SECURITY DEFINER, returns one row per participant: `user_id, display_name, username, avatar_url, is_me, is_friend, cumulative_miles, week_miles, last_synced_at`. Sums `daily_activity.distance_miles` over `[start_date, COALESCE(end_date, CURRENT_DATE)]`. `GRANT EXECUTE ... TO authenticated`. | `supabase/migrations/2026XXXX_add_challenge_standings.sql` | RPC returns correct rows for a member; errors/empty for a non-member (mirror `can_view_challenge`). |
-| **1.2** | Regenerate DB types | `lib/database.types.ts` (`npx supabase gen types typescript --linked`) | `challenge_standings` typed |
-| **1.3** | `getChallengeStandings(challengeId)` — calls RPC, returns typed rows sorted by `cumulative_miles` desc. For trail challenges, map each row's miles → `computeTrailPosition(points, miles)` to get `{ latitude, longitude, precedingPoint.label, completed }`. | new `lib/challengeStandings.ts` | Returns ranked rows with a `trailPosition` field (null when `trail_id === null`) |
+| ✅ **1.1** | `challenge_standings(p_challenge_id bigint)` RPC — SECURITY DEFINER, one row per participant: `user_id, display_name, username, avatar_url, is_me, is_friend, cumulative_miles, week_miles, last_synced_at`. Sums `daily_activity.distance_miles` over `[start_date, COALESCE(end_date, CURRENT_DATE)]`; `week_miles` also clamped to trailing 7 days. Roster = participants ∪ creator. Gated by `can_view_challenge()`. `GRANT EXECUTE ... TO authenticated`. | `supabase/migrations/20260826160000_add_challenge_standings.sql` | **Done (#3).** Verified on PG17 against all migrations + seed: member/non-member views, public vs private gating, creator-not-participant, friend flags, ordering, out-of-window exclusion, `anon` denial. |
+| 🟡 **1.2** | DB types for the RPC | `lib/database.types.ts` | **Partial (#3)** — entry hand-added in the shape `supabase gen types` emits. Someone with the linked project (`utyzijecjdyiaskmrbsa`) should run `npx supabase gen types typescript --linked` and diff. |
+| **1.3** | `getChallengeStandings(challengeId)` — calls `supabase.rpc('challenge_standings', { p_challenge_id })`, returns typed rows (already `cumulative_miles` desc from the RPC). For trail challenges, map each row's miles → `computeTrailPosition(points, miles)` to get `{ latitude, longitude, precedingPoint.label, completed }`. | new `lib/challengeStandings.ts` | Returns ranked rows with a `trailPosition` field (null when `trail_id === null`) |
 | **1.4** | Add `friend: '#47688c'` | `lib/theme.ts` | token exists |
 | **1.5** | **Map: N markers.** Replace the single `PointAnnotation` with one per standing. Interim: `PointAnnotation` per row (fine at ~≤15 people). Self = existing green dot; friend = blue (`colors.friend`) initials pin; other = grey hollow dot; finished (`completed`) = flag at the last trail point. Tap → callout (`display_name` + `cumulative_miles`). | `app/(app)/challenge/[id].tsx` | All participants show; tapping shows name + miles |
 | **1.6** | **Legend** overlay card, bottom-left of the map. | same | matches `Components.dc.html` |
