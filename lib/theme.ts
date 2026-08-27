@@ -15,6 +15,9 @@ export const colors = {
   route: '#c7d6cb',
   danger: '#b3261e',
   white: '#ffffff',
+  // A second marker hue for challenge maps — friends' positions, distinct from
+  // your own green dot. Same lightness/chroma as `primary`, shifted in hue.
+  friend: '#47688c',
 };
 
 export const spacing = {

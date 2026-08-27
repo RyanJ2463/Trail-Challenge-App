@@ -13,12 +13,15 @@ this is a shared working doc.
 
 | Date | Task | Status | PR |
 | --- | --- | --- | --- |
-| 2026-08-26 | **1.1** `challenge_standings()` RPC | ✅ merged-pending — verified on PG17 against all migrations + seed | #3 |
-| 2026-08-26 | **1.2** DB types for the RPC | 🟡 partial — `challenge_standings` entry hand-added to `lib/database.types.ts` in #3; needs a real `supabase gen types --linked` regen to confirm | #3 |
-| 2026-08-27 | **1.3** `lib/challengeStandings.ts` | ✅ merged-pending — `getChallengeStandings()` + pure `rankStandings()` / `trailPositionLabel()`; `tsc` clean, logic smoke-tested against real `computeTrailPosition` | #4 (stacked on #3) |
+| 2026-08-26 | **1.1** `challenge_standings()` RPC | ✅ merged (#3) — verified on PG17 against all migrations + seed | #3 |
+| 2026-08-26 | **1.2** DB types for the RPC | 🟡 partial — `challenge_standings` entry hand-added to `lib/database.types.ts`; needs a real `supabase gen types --linked` regen to confirm | #3 |
+| 2026-08-27 | **1.3** `lib/challengeStandings.ts` | ✅ merged (#4) — `getChallengeStandings()` + pure `rankStandings()` / `trailPositionLabel()`; `tsc` clean, logic smoke-tested against real `computeTrailPosition` | #4 |
+| 2026-08-27 | **1.4** `friend` colour token | ✅ — `colors.friend = '#47688c'` | #5 |
+| 2026-08-27 | **1.5–1.9** challenge detail screen redesign | ✅ merged-pending — per-participant markers + callout + legend, standings list replaces the chips, "Your progress" rank + gap, activity-type banner. `tsc` + iOS Metro bundle both clean; not yet run on a device | #5 |
 
-Next up: **1.5** map markers + **1.7** standings list in `app/(app)/challenge/[id].tsx`
-(**1.4**, the `friend` colour token, folds into whichever of those lands first).
+Next up: **1.10** "See all" standings screen (needs the `challenge/[id].tsx` → folder routing decision, §6 S1) — or start Phase 2.
+
+Found in passing (not this feature): `react-native-nitro-modules` (peer dep of `@kingstinct/react-native-healthkit@^14`) is missing from `package.json` — a clean `npm install` + Metro bundle fails on `lib/healthSync.ts` without it. Worth a one-line fix PR.
 
 ---
 
@@ -37,10 +40,10 @@ health-sync rework.
 
 | Capability | Today | Target (design) |
 | --- | --- | --- |
-| Map markers | Current user only (`PointAnnotation`) | Every participant: you / friends / others / finished, legend, tap-callout |
-| Standings | Name chips, unranked | Ranked list: rank, avatar, trail position, miles, weekly delta, you-highlighted |
-| "See all" screen | — | Full standings: per-hiker progress bar, weekly delta, sync state |
-| Per-participant mileage | ✅ **`challenge_standings(challenge_id)` RPC landed** (#3) — client wiring next | `challenge_standings(challenge_id)` SECURITY DEFINER RPC |
+| Map markers | ✅ every participant via `MarkerView` (#5) — you / friends / others / finished, legend, tap-callout | Every participant: you / friends / others / finished, legend, tap-callout |
+| Standings | ✅ ranked list (#5) — rank, avatar, trail position, miles, weekly delta, you-highlighted | Ranked list: rank, avatar, trail position, miles, weekly delta, you-highlighted |
+| "See all" screen | — (next: 1.10) | Full standings: per-hiker progress bar, weekly delta, sync state |
+| Per-participant mileage | ✅ `challenge_standings(challenge_id)` RPC (#3) + `lib/challengeStandings.ts` (#4), wired into the screen (#5) | `challenge_standings(challenge_id)` SECURITY DEFINER RPC |
 | `activity_type` | Cosmetic — every challenge sums all walking+running distance | Running challenge counts runs only, etc. |
 | `challenge_progress` table | Exists, nothing writes to it | Decide: populate or drop |
 
@@ -94,11 +97,12 @@ health-sync rework.
 2. **`activity_type` is not in `daily_activity`.** Making it "real" needs a schema
    change *and* a HealthKit rework (the combined walk+run quantity type can't be
    split — running attribution needs `HKWorkout` samples). See §7.
-3. **Map renders one marker.** Needs N markers keyed by participant, styled by
-   relationship (self / friend / other / finished).
-4. **Standings UI doesn't exist.** Chips → ranked rows; plus a new full-screen route.
-5. **Open-goal challenges (`trail_id === null`)** — the design assumes a trail.
-   Standings should still work (miles only, no trail-position line, no map).
+3. ~~**Map renders one marker.**~~ ✅ N markers via `MarkerView`, styled by
+   relationship, with tap-callout + legend (#5).
+4. ~~**Standings UI doesn't exist.**~~ ✅ ranked list on the detail screen (#5).
+   The full-screen "See all" route is still to do (1.10).
+5. ~~**Open-goal challenges (`trail_id === null`)**~~ ✅ handled (#5) — `[]` trail
+   points → `trailPosition` null → no sub-line, no map, standings still rank on miles.
 
 ---
 
@@ -115,12 +119,12 @@ running distance counts"). ~2–3 focused PRs.
 | ✅ **1.1** | `challenge_standings(p_challenge_id bigint)` RPC — SECURITY DEFINER, one row per participant: `user_id, display_name, username, avatar_url, is_me, is_friend, cumulative_miles, week_miles, last_synced_at`. Sums `daily_activity.distance_miles` over `[start_date, COALESCE(end_date, CURRENT_DATE)]`; `week_miles` also clamped to trailing 7 days. Roster = participants ∪ creator. Gated by `can_view_challenge()`. `GRANT EXECUTE ... TO authenticated`. | `supabase/migrations/20260826160000_add_challenge_standings.sql` | **Done (#3).** Verified on PG17 against all migrations + seed: member/non-member views, public vs private gating, creator-not-participant, friend flags, ordering, out-of-window exclusion, `anon` denial. |
 | 🟡 **1.2** | DB types for the RPC | `lib/database.types.ts` | **Partial (#3)** — entry hand-added in the shape `supabase gen types` emits. Someone with the linked project (`utyzijecjdyiaskmrbsa`) should run `npx supabase gen types typescript --linked` and diff. |
 | ✅ **1.3** | `getChallengeStandings(challengeId, trailPoints?)` → calls the RPC, camel-cases rows, then `rankStandings()` (pure: sort by miles desc then name, assign 1-based `rank`, attach `computeTrailPosition` per row — `null` when `trailPoints` is empty). Plus `trailPositionLabel()` → `"Mile 142 · past Franconia Ridge"` / `"Finished · …"` / `null`. | `lib/challengeStandings.ts` | **Done (#4).** `tsc` clean; `rankStandings` + `trailPositionLabel` smoke-tested (14 cases) against the real `computeTrailPosition`. Screen passes its already-loaded `trail_points`; `[]` for open-goal. |
-| **1.4** | Add `friend: '#47688c'` | `lib/theme.ts` | token exists |
-| **1.5** | **Map: N markers.** Replace the single `PointAnnotation` with one per standing. Interim: `PointAnnotation` per row (fine at ~≤15 people). Self = existing green dot; friend = blue (`colors.friend`) initials pin; other = grey hollow dot; finished (`completed`) = flag at the last trail point. Tap → callout (`display_name` + `cumulative_miles`). | `app/(app)/challenge/[id].tsx` | All participants show; tapping shows name + miles |
-| **1.6** | **Legend** overlay card, bottom-left of the map. | same | matches `Components.dc.html` |
-| **1.7** | **Standings list** replaces `participantList` chips. Row = rank (medal `🥇🥈🥉` / number, matching `leaderboard.tsx` `RANK_MEDAL`), avatar initial (friend gets a `colors.friend` dot badge), name, trail-position sub-line ("Mile 142 · past Franconia Ridge" from `precedingPoint.label`), miles, `+X.X this wk`. Your row highlighted like `leaderboard.tsx` `rowMe`. Keep invites section below. | same | list renders from `getChallengeStandings`, you highlighted, tap row → `profile/[id]` |
-| **1.8** | **"Your progress" card** gains a `Nth of M` pill and "X mi behind Nth" line (derive from the standings array). | same | numbers match the list |
-| **1.9** | **Activity-type explainer banner** (`primaryMuted` bg, info icon). Phase-1 copy: *"All walking and running distance from your watch counts toward this challenge."* | same | banner shows above "Your progress" |
+| ✅ **1.4** | Add `friend: '#47688c'` | `lib/theme.ts` | **Done (#5).** `colors.friend`. |
+| ✅ **1.5** | **Map: N markers.** One `Mapbox.MarkerView` per standing with a `trailPosition`. Self = green dot + halo; friend = `colors.friend` initials circle; other = grey hollow dot; finished (`completed`) = flag. `<Pressable>` toggles a selected state → white callout bubble (`You`/name + miles). Selected marker rendered last so its callout is on top. Mapbox logo/attribution moved to the top so the legend has the bottom-left. | `app/(app)/challenge/[id].tsx` | **Done (#5).** `tsc` + iOS Metro bundle clean; visual pass on a device still TODO. `MarkerView` is fine to ~100 markers — `SymbolLayer` swap stays a Phase 3 item. |
+| ✅ **1.6** | **Legend** overlay card, bottom-left of the map. | same | **Done (#5).** You / Friends / Others / Finished, translucent card. |
+| ✅ **1.7** | **Standings list** replaces the chips. Row = medal/number rank, initials avatar (friend → `colors.friend` corner dot), name (`You` + highlight for self, `rowMe`-style), `trailPositionLabel()` sub-line, cumulative miles, `+X.X this wk`. Row → `profile/[id]`. Invites section kept below. | same | **Done (#5).** Renders from `getChallengeStandings`; empty state kept. |
+| ✅ **1.8** | **"Your progress" card** — `Nth of M` pill + "`X.X mi behind <name>`" from the standings array. Card now only shows when you're actually in the challenge (`isMe` row exists); non-members see the join button + others' standings. Screen's mileage now comes from your standings row, so the map marker and the progress number can't disagree. | same | **Done (#5).** |
+| ✅ **1.9** | **Activity-type banner** (`primaryMuted`). Copy: *"All walking and running distance from your watch counts toward this challenge."* (`"Step distance …"` for a steps challenge). | same | **Done (#5).** Above "Your progress". |
 | **1.10** | **"See all" screen.** `challenge/[id]` standings route (see S1). Full list: per-hiker mini progress bar vs trail total, weekly delta, `last_synced_at` relative time, and an "awaiting first sync" state (`last_synced_at === null`). Segmented control (Trail distance / This week) can be static for v1. | new screen file | reachable from a "See all N" row on the detail screen |
 | **1.11** | Open-goal handling: standings list works with `trailPosition === null` (hide the sub-line, hide map, keep miles + rank). | both screens | no crash on a `trail_id === null` challenge |
 
