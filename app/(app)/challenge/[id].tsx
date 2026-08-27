@@ -27,11 +27,10 @@ import {
 } from '../../../lib/challengeStandings';
 import { getRouteSegments, type TrailPoint } from '../../../lib/trailPosition';
 import { activityTypeMeta } from '../../../lib/activityTypes';
+import { Icon, rankIconName } from '../../../components/Icon';
 import { colors, radius, spacing, typography } from '../../../lib/theme';
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? '');
-
-const RANK_MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
 function initials(name: string): string {
   const trimmed = name.trim();
@@ -236,9 +235,14 @@ export default function ChallengeDetail() {
         {error && <Text style={styles.error}>{error}</Text>}
 
         <Text style={styles.trailName}>{challenge.trails?.name ?? 'Open goal — no trail'}</Text>
-        <Text style={styles.activityLabel}>
-          {activityTypeMeta(challenge.activity_type).emoji} {activityTypeMeta(challenge.activity_type).label}
-        </Text>
+        <View style={styles.activityLabel}>
+          <Icon
+            name={activityTypeMeta(challenge.activity_type).icon}
+            size={15}
+            color={colors.textMuted}
+          />
+          <Text style={styles.activityLabelText}>{activityTypeMeta(challenge.activity_type).label}</Text>
+        </View>
 
         <View style={styles.infoBanner}>
           <Text style={styles.infoBannerText}>{activityBanner}</Text>
@@ -305,7 +309,13 @@ export default function ChallengeDetail() {
                   style={StyleSheet.flatten([styles.standingRow, s.isMe && styles.standingRowMe])}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.standingRank}>{RANK_MEDAL[s.rank] ?? s.rank}</Text>
+                  <View style={styles.standingRank}>
+                    {rankIconName(s.rank) ? (
+                      <Icon name={rankIconName(s.rank)!} size={20} color={colors.primaryDark} strokeWidth={1.7} />
+                    ) : (
+                      <Text style={styles.standingRankText}>{s.rank}</Text>
+                    )}
+                  </View>
                   <View style={styles.standingAvatar}>
                     <Text style={styles.standingAvatarText}>{initials(s.displayName)}</Text>
                     {s.isFriend && !s.isMe && <View style={styles.standingFriendDot} />}
@@ -578,8 +588,13 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   activityLabel: {
-    color: colors.textMuted,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + 2,
     marginBottom: spacing.md,
+  },
+  activityLabelText: {
+    color: colors.textMuted,
   },
   infoBanner: {
     backgroundColor: colors.primaryMuted,
@@ -693,11 +708,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryMuted,
   },
   standingRank: {
-    width: 28,
+    width: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  standingRankText: {
     fontSize: 15,
     fontWeight: '700',
     color: colors.textMuted,
-    textAlign: 'center',
   },
   standingAvatar: {
     width: 36,

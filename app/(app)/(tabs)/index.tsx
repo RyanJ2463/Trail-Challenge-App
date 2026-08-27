@@ -18,7 +18,20 @@ import {
 } from '../../../lib/challenges';
 import { activityTypeMeta } from '../../../lib/activityTypes';
 import { isHealthSyncAvailable, requestHealthAuthorization, syncHealthData } from '../../../lib/healthSync';
+import { Icon } from '../../../components/Icon';
 import { colors, radius, spacing, typography } from '../../../lib/theme';
+
+function ChallengeSubtitle({ challenge }: { challenge: ChallengeWithTrail }) {
+  return (
+    <View style={styles.cardSubtitle}>
+      <Icon name={activityTypeMeta(challenge.activity_type).icon} size={15} color={colors.textMuted} />
+      <Text style={styles.cardSubtitleText} numberOfLines={1}>
+        {challenge.trails?.name ?? 'Open goal — no trail'}
+        {challenge.trails ? ` · ${challenge.trails.total_distance_miles} mi` : ''}
+      </Text>
+    </View>
+  );
+}
 
 export default function Home() {
   const { session } = useAuth();
@@ -94,7 +107,10 @@ export default function Home() {
     >
       <View style={styles.header}>
         <Text style={styles.greeting}>Trail Challenge</Text>
-        <Text style={styles.greetingSub}>🥾 Ready for a few more miles?</Text>
+        <View style={styles.greetingSub}>
+          <Icon name="hiking" size={15} color={colors.textMuted} />
+          <Text style={styles.greetingSubText}>Ready for a few more miles?</Text>
+        </View>
       </View>
 
       <TouchableOpacity
@@ -113,9 +129,8 @@ export default function Home() {
             disabled={syncing}
             activeOpacity={0.85}
           >
-            <Text style={styles.syncButtonText}>
-              {syncing ? 'Syncing…' : '🔄 Sync Health data'}
-            </Text>
+            <Icon name="sync" size={16} color={colors.primaryDark} />
+            <Text style={styles.syncButtonText}>{syncing ? 'Syncing…' : 'Sync Health data'}</Text>
           </TouchableOpacity>
           {syncStatus && <Text style={styles.syncStatus}>{syncStatus}</Text>}
         </View>
@@ -128,7 +143,7 @@ export default function Home() {
           <Text style={styles.sectionTitle}>Your challenges</Text>
           {myChallenges.length === 0 ? (
             <View style={styles.emptyCard}>
-              <Text style={styles.emptyEmoji}>🏔️</Text>
+              <Icon name="mountain" size={30} color={colors.primary} strokeWidth={1.8} />
               <Text style={styles.emptyText}>
                 You haven&apos;t joined a challenge yet. Start one above, or join a public
                 challenge below.
@@ -151,11 +166,7 @@ export default function Home() {
                       </Text>
                     </View>
                   </View>
-                  <Text style={styles.cardSubtitle}>
-                    {activityTypeMeta(challenge.activity_type).emoji}{' '}
-                    {challenge.trails?.name ?? 'Open goal — no trail'}
-                    {challenge.trails ? ` · ${challenge.trails.total_distance_miles} mi` : ''}
-                  </Text>
+                  <ChallengeSubtitle challenge={challenge} />
                   <Text style={styles.cardMeta}>Started {challenge.start_date}</Text>
                 </TouchableOpacity>
               </Link>
@@ -171,11 +182,7 @@ export default function Home() {
             discoverable.map((challenge) => (
               <View key={challenge.id} style={styles.card}>
                 <Text style={styles.cardTitle}>{challenge.name}</Text>
-                <Text style={styles.cardSubtitle}>
-                  {activityTypeMeta(challenge.activity_type).emoji}{' '}
-                  {challenge.trails?.name ?? 'Open goal — no trail'}
-                  {challenge.trails ? ` · ${challenge.trails.total_distance_miles} mi` : ''}
-                </Text>
+                <ChallengeSubtitle challenge={challenge} />
                 <TouchableOpacity
                   style={styles.joinButton}
                   onPress={() => handleJoin(challenge.id)}
@@ -213,8 +220,13 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   greetingSub: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + 2,
+    marginTop: spacing.xs,
+  },
+  greetingSubText: {
     color: colors.textMuted,
-    marginTop: 2,
   },
   startButton: {
     backgroundColor: colors.primary,
@@ -245,7 +257,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radius.md,
     padding: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -273,10 +288,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.lg,
     alignItems: 'center',
-  },
-  emptyEmoji: {
-    fontSize: 28,
-    marginBottom: spacing.xs,
+    gap: spacing.sm,
   },
   emptyText: {
     color: colors.textMuted,
@@ -304,8 +316,14 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   cardSubtitle: {
-    color: colors.textMuted,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + 2,
     marginBottom: spacing.xs,
+  },
+  cardSubtitleText: {
+    color: colors.textMuted,
+    flexShrink: 1,
   },
   cardMeta: {
     color: colors.textFaint,

@@ -16,6 +16,7 @@ import { sendChallengeInvite } from '../../../../lib/challengeInvites';
 import { listFriends, type UserProfile } from '../../../../lib/friends';
 import { activityTypeMeta, type ActivityType } from '../../../../lib/activityTypes';
 import type { Tables } from '../../../../lib/database.types';
+import { Icon } from '../../../../components/Icon';
 import { colors, radius, spacing, typography } from '../../../../lib/theme';
 
 // Dates are handled as plain YYYY-MM-DD calendar values throughout this
@@ -167,7 +168,9 @@ export default function NewChallengeDetails() {
       {error && <Text style={styles.error}>{error}</Text>}
 
       <TouchableOpacity style={styles.activityRow} onPress={() => router.back()} activeOpacity={0.7}>
-        <Text style={styles.activityEmoji}>{activity.emoji}</Text>
+        <View style={styles.activityIcon}>
+          <Icon name={activity.icon} size={20} color={colors.primaryDark} strokeWidth={1.9} />
+        </View>
         <Text style={styles.activityLabel}>{activity.label} challenge</Text>
         <Text style={styles.activityChange}>Change</Text>
       </TouchableOpacity>
@@ -189,9 +192,16 @@ export default function NewChallengeDetails() {
           activeOpacity={0.7}
         >
           <View style={styles.trailOptionText}>
-            <Text style={styles.activityLabel}>
-              {selectedTrail ? `🥾 ${selectedTrail.name}` : '🎯 No trail — open goal'}
-            </Text>
+            <View style={styles.trailNameRow}>
+              <Icon
+                name={selectedTrail ? 'route' : 'flag'}
+                size={15}
+                color={colors.primaryDark}
+              />
+              <Text style={styles.activityLabel}>
+                {selectedTrail ? selectedTrail.name : 'No trail — open goal'}
+              </Text>
+            </View>
             {selectedTrail?.description && (
               <Text style={styles.trailSummaryDescription} numberOfLines={1}>
                 {selectedTrail.description}
@@ -215,11 +225,14 @@ export default function NewChallengeDetails() {
             activeOpacity={0.8}
           >
             <View style={styles.trailOptionText}>
-              <Text
-                style={[styles.trailOptionName, trailId === null && styles.trailOptionTextSelected]}
-              >
-                🎯 No trail
-              </Text>
+              <View style={styles.trailNameRow}>
+                <Icon name="flag" size={15} color={trailId === null ? colors.white : colors.text} />
+                <Text
+                  style={[styles.trailOptionName, trailId === null && styles.trailOptionTextSelected]}
+                >
+                  No trail
+                </Text>
+              </View>
               <Text
                 style={[
                   styles.trailOptionDescription,
@@ -264,14 +277,21 @@ export default function NewChallengeDetails() {
                         activeOpacity={0.8}
                       >
                         <View style={styles.trailOptionText}>
-                          <Text
-                            style={[
-                              styles.trailOptionName,
-                              trailId === trail.id && styles.trailOptionTextSelected,
-                            ]}
-                          >
-                            🥾 {trail.name}
-                          </Text>
+                          <View style={styles.trailNameRow}>
+                            <Icon
+                              name="route"
+                              size={15}
+                              color={trailId === trail.id ? colors.white : colors.text}
+                            />
+                            <Text
+                              style={[
+                                styles.trailOptionName,
+                                trailId === trail.id && styles.trailOptionTextSelected,
+                              ]}
+                            >
+                              {trail.name}
+                            </Text>
+                          </View>
                           {trail.description && (
                             <Text
                               style={[
@@ -441,14 +461,18 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.lg,
   },
-  activityEmoji: {
-    fontSize: 22,
+  activityIcon: {
     marginRight: spacing.sm,
   },
   activityLabel: {
     ...typography.subheading,
     color: colors.primaryDark,
     flex: 1,
+  },
+  trailNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   activityChange: {
     color: colors.primary,

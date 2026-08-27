@@ -3,9 +3,21 @@ import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, Toucha
 import { Link, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../../lib/auth-context';
 import { getFriendsWeeklyLeaderboard, getWeeklyLeaderboard, type LeaderboardEntry } from '../../../lib/leaderboard';
+import { Icon, rankIconName } from '../../../components/Icon';
 import { colors, radius, spacing, typography } from '../../../lib/theme';
 
-const RANK_MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
+function RankBadge({ rank }: { rank: number }) {
+  const icon = rankIconName(rank);
+  return (
+    <View style={styles.rank}>
+      {icon ? (
+        <Icon name={icon} size={22} color={colors.primaryDark} strokeWidth={1.8} />
+      ) : (
+        <Text style={styles.rankText}>{rank}</Text>
+      )}
+    </View>
+  );
+}
 
 type Scope = 'global' | 'friends';
 
@@ -84,7 +96,7 @@ export default function Leaderboard() {
         <ActivityIndicator style={styles.loading} color={colors.primary} />
       ) : entries.length === 0 ? (
         <View style={styles.emptyCard}>
-          <Text style={styles.emptyEmoji}>🏆</Text>
+          <Icon name="leaderboard" size={28} color={colors.primary} strokeWidth={1.8} />
           <Text style={styles.emptyText}>
             {scope === 'global'
               ? 'No activity logged this week yet. Sync your Health data to show up here.'
@@ -101,7 +113,7 @@ export default function Leaderboard() {
                 style={StyleSheet.flatten([styles.row, isMe && styles.rowMe])}
                 activeOpacity={0.7}
               >
-                <Text style={styles.rank}>{RANK_MEDAL[rank] ?? rank}</Text>
+                <RankBadge rank={rank} />
                 <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
                   {entry.displayName}
                   {isMe ? ' (you)' : ''}
@@ -173,10 +185,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryMuted,
   },
   rank: {
-    width: 36,
-    fontSize: 16,
+    width: 34,
+    alignItems: 'center',
+    marginRight: spacing.xs,
+  },
+  rankText: {
+    fontSize: 15,
     fontWeight: '700',
-    color: colors.text,
+    color: colors.textMuted,
   },
   name: {
     ...typography.subheading,
@@ -196,10 +212,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.lg,
     alignItems: 'center',
-  },
-  emptyEmoji: {
-    fontSize: 28,
-    marginBottom: spacing.xs,
+    gap: spacing.sm,
   },
   emptyText: {
     color: colors.textMuted,

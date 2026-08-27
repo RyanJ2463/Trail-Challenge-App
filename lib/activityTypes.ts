@@ -1,11 +1,13 @@
+import type { IconName } from '../components/Icon';
+
 export type ActivityType = 'hiking' | 'walking' | 'running' | 'cycling' | 'steps';
 
-export const ACTIVITY_TYPES: { value: ActivityType; label: string; emoji: string }[] = [
-  { value: 'hiking', label: 'Hiking', emoji: '🥾' },
-  { value: 'walking', label: 'Walking', emoji: '🚶' },
-  { value: 'running', label: 'Running', emoji: '🏃' },
-  { value: 'cycling', label: 'Cycling', emoji: '🚴' },
-  { value: 'steps', label: 'Steps', emoji: '👟' },
+export const ACTIVITY_TYPES: { value: ActivityType; label: string; icon: IconName }[] = [
+  { value: 'hiking', label: 'Hiking', icon: 'hiking' },
+  { value: 'walking', label: 'Walking', icon: 'walking' },
+  { value: 'running', label: 'Running', icon: 'running' },
+  { value: 'cycling', label: 'Cycling', icon: 'cycling' },
+  { value: 'steps', label: 'Steps', icon: 'steps' },
 ];
 
 export function activityTypeMeta(type: string) {
