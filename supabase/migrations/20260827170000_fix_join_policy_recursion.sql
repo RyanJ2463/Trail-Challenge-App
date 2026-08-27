@@ -22,7 +22,10 @@
 -- policy cycle can form.
 -- ============================================================
 
-CREATE FUNCTION public.challenge_is_public(p_challenge_id BIGINT)
+-- CREATE OR REPLACE (not plain CREATE) so this is safe to apply even if the
+-- same statement was already run by hand against a project to unblock joins
+-- before this migration merged.
+CREATE OR REPLACE FUNCTION public.challenge_is_public(p_challenge_id BIGINT)
 RETURNS BOOLEAN
 LANGUAGE sql
 SECURITY DEFINER
