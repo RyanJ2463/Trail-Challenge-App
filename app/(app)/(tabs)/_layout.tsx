@@ -1,13 +1,16 @@
 import { useCallback, useState } from 'react';
-import { Text } from 'react-native';
+import type { ColorValue } from 'react-native';
 import { Tabs } from 'expo-router/js-tabs';
 import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../../lib/auth-context';
 import { listMyPendingInvites } from '../../../lib/challengeInvites';
+import { Icon, type IconName } from '../../../components/Icon';
 import { colors } from '../../../lib/theme';
 
-function TabIcon({ emoji }: { emoji: string }) {
-  return <Text style={{ fontSize: 20 }}>{emoji}</Text>;
+function tabIcon(name: IconName) {
+  return ({ color }: { color: ColorValue }) => (
+    <Icon name={name} size={23} color={color as string} strokeWidth={1.9} />
+  );
 }
 
 export default function TabsLayout() {
@@ -37,21 +40,21 @@ export default function TabsLayout() {
         options={{
           title: 'Home',
           headerShown: false,
-          tabBarIcon: () => <TabIcon emoji="🏠" />,
+          tabBarIcon: tabIcon('home'),
         }}
       />
       <Tabs.Screen
         name="leaderboard"
         options={{
           title: 'Leaderboard',
-          tabBarIcon: () => <TabIcon emoji="🏆" />,
+          tabBarIcon: tabIcon('leaderboard'),
         }}
       />
       <Tabs.Screen
         name="friends"
         options={{
           title: 'Friends',
-          tabBarIcon: () => <TabIcon emoji="👥" />,
+          tabBarIcon: tabIcon('friends'),
           tabBarBadge: pendingInviteCount > 0 ? pendingInviteCount : undefined,
         }}
       />
@@ -60,7 +63,7 @@ export default function TabsLayout() {
         options={{
           title: 'Profile',
           headerShown: false,
-          tabBarIcon: () => <TabIcon emoji="👤" />,
+          tabBarIcon: tabIcon('profile'),
         }}
       />
     </Tabs>

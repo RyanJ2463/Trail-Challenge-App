@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ACTIVITY_TYPES } from '../../../../lib/activityTypes';
+import { Icon } from '../../../../components/Icon';
 import { colors, radius, spacing, typography } from '../../../../lib/theme';
 
 export default function ChooseActivityType() {
@@ -26,7 +27,7 @@ export default function ChooseActivityType() {
               })
             }
           >
-            <Text style={styles.optionEmoji}>{activity.emoji}</Text>
+            <Icon name={activity.icon} size={34} color={colors.primary} strokeWidth={1.8} />
             <Text style={styles.optionLabel}>{activity.label}</Text>
           </TouchableOpacity>
         ))}
@@ -67,10 +68,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  optionEmoji: {
-    fontSize: 36,
-    marginBottom: spacing.sm,
+    gap: spacing.sm,
   },
   optionLabel: {
     ...typography.subheading,

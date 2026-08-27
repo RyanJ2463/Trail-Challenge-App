@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { Icon } from '../../components/Icon';
 import { colors, radius, spacing, typography } from '../../lib/theme';
 
 export default function SignUp() {
@@ -52,7 +53,9 @@ export default function SignUp() {
   if (confirmationSent) {
     return (
       <View style={styles.container}>
-        <Text style={styles.wordmark}>📬</Text>
+        <View style={styles.wordmark}>
+          <Icon name="mail" size={42} color={colors.primary} strokeWidth={1.7} />
+        </View>
         <Text style={styles.title}>Check your email</Text>
         <Text style={styles.info}>
           We sent a confirmation link to {email}. Confirm your email, then sign in.
@@ -131,9 +134,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   wordmark: {
-    fontSize: 40,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
+    alignItems: 'center',
+    marginBottom: spacing.md,
   },
   title: {
     ...typography.title,
