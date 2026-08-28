@@ -1,0 +1,24 @@
+diff --git a/node_modules/react-native/Libraries/Renderer/shims/ReactNativeViewConfigRegistry.js b/node_modules/react-native/Libraries/Renderer/shims/ReactNativeViewConfigRegistry.js
+index 436b74d..0f3f7ca 100644
+--- a/node_modules/react-native/Libraries/Renderer/shims/ReactNativeViewConfigRegistry.js
++++ b/node_modules/react-native/Libraries/Renderer/shims/ReactNativeViewConfigRegistry.js
+@@ -73,11 +73,14 @@ function processEventTypes(viewConfig: ViewConfig): void {
+  * The callback is deferred until the view is actually rendered.
+  */
+ export function register(name: string, callback: () => ViewConfig): string {
+-  invariant(
+-    !viewConfigCallbacks.has(name),
+-    'Tried to register two views with the same name %s',
+-    name,
+-  );
++  // patch: Fast Refresh re-evaluates modules that register native components at
++  // module scope (e.g. react-native-svg's Fabric filter components), which made
++  // this a fatal "Tried to register two views with the same name" invariant on
++  // every hot reload. Registering the same name twice is harmless — the first
++  // config wins — so treat a repeat registration as a no-op.
++  if (viewConfigCallbacks.has(name)) {
++    return name;
++  }
+   invariant(
+     typeof callback === 'function',
+     'View config getter callback for component `%s` must be a function (received `%s`)',
