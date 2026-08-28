@@ -12,7 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../../lib/auth-context';
 import { getProfile, updateProfileSettings, type ProfileVisibility } from '../../../lib/profile';
-import { colors, radius, spacing, typography } from '../../../lib/theme';
+import { fonts, radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../../../lib/theme';
 
 const VISIBILITY_OPTIONS: { key: ProfileVisibility; label: string; hint: string }[] = [
   { key: 'private', label: 'Private', hint: 'Only you can see your profile.' },
@@ -23,6 +23,8 @@ const VISIBILITY_OPTIONS: { key: ProfileVisibility; label: string; hint: string 
 export default function EditProfile() {
   const router = useRouter();
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const userId = session?.user.id;
 
   const [loading, setLoading] = useState(true);
@@ -150,6 +152,8 @@ function SettingRow({
   value: boolean;
   onChange: (value: boolean) => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.settingRow}>
       <Text style={styles.settingLabel}>{label}</Text>
@@ -163,7 +167,7 @@ function SettingRow({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -222,7 +226,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   visibilityTextSelected: {
-    color: colors.white,
+    color: colors.onPrimary,
   },
   settingRow: {
     flexDirection: 'row',
@@ -238,7 +242,7 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     color: colors.text,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     flex: 1,
     marginRight: spacing.md,
   },
@@ -253,8 +257,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
     fontSize: 16,
   },
   error: {

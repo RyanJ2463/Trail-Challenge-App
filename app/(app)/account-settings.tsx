@@ -4,11 +4,30 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../lib/auth-context';
 import { supabase } from '../../lib/supabase';
 import { deleteOwnAccount, updateEmail, updatePassword } from '../../lib/account';
-import { colors, radius, spacing, typography } from '../../lib/theme';
+import {
+  fonts,
+  radius,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  useThemePreference,
+  type Theme,
+  type ThemePreference,
+} from '../../lib/theme';
+
+const APPEARANCE_OPTIONS: { key: ThemePreference; label: string }[] = [
+  { key: 'system', label: 'System' },
+  { key: 'light', label: 'Light' },
+  { key: 'dark', label: 'Dark' },
+];
 
 export default function AccountSettings() {
   const router = useRouter();
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const { preference, setPreference } = useThemePreference();
 
   const [email, setEmail] = useState(session?.user.email ?? '');
   const [emailStatus, setEmailStatus] = useState<string | null>(null);
@@ -93,6 +112,25 @@ export default function AccountSettings() {
         <Text style={styles.signOutButtonText}>Sign out</Text>
       </TouchableOpacity>
 
+      <Text style={styles.sectionTitle}>Appearance</Text>
+      <View style={styles.segmented}>
+        {APPEARANCE_OPTIONS.map((option) => {
+          const selected = preference === option.key;
+          return (
+            <TouchableOpacity
+              key={option.key}
+              style={[styles.segment, selected && styles.segmentSelected]}
+              onPress={() => setPreference(option.key)}
+              activeOpacity={0.85}
+            >
+              <Text style={[styles.segmentText, selected && styles.segmentTextSelected]}>
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
       <Text style={styles.sectionTitle}>Email</Text>
       <TextInput
         style={styles.input}
@@ -160,7 +198,7 @@ export default function AccountSettings() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -179,7 +217,7 @@ const styles = StyleSheet.create({
   },
   signOutButtonText: {
     color: colors.text,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
   },
   sectionTitle: {
     ...typography.heading,
@@ -187,6 +225,30 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
+  },
+  segmented: {
+    flexDirection: 'row',
+    backgroundColor: colors.primaryMuted,
+    borderRadius: radius.pill,
+    padding: 4,
+    gap: 4,
+  },
+  segment: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+  },
+  segmentSelected: {
+    backgroundColor: colors.primary,
+  },
+  segmentText: {
+    fontFamily: fonts.semibold,
+    fontSize: 13,
+    color: colors.primaryDark,
+  },
+  segmentTextSelected: {
+    color: colors.onPrimary,
   },
   input: {
     backgroundColor: colors.surface,
@@ -211,8 +273,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
   },
   status: {
     color: colors.textMuted,
@@ -238,7 +300,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteButtonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
   },
 });

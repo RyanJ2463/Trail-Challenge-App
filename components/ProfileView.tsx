@@ -3,7 +3,8 @@ import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacit
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useAuth } from '../lib/auth-context';
 import { getProfile, type Profile } from '../lib/profile';
-import { colors, radius, spacing, typography } from '../lib/theme';
+import { Icon } from './Icon';
+import { fonts, radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../lib/theme';
 
 function formatMonthLabel(monthStr: string): string {
   const [year, month] = monthStr.split('-').map(Number);
@@ -33,6 +34,8 @@ function formatWeekLabel(weekStartStr: string): string {
 export function ProfileView({ userId, setNativeTitle = false }: { userId: string; setNativeTitle?: boolean }) {
   const router = useRouter();
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const viewerId = session?.user.id;
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -63,7 +66,7 @@ export function ProfileView({ userId, setNativeTitle = false }: { userId: string
     return (
       <View style={styles.center}>
         {setNativeTitle && <Stack.Screen options={{ title: 'Profile' }} />}
-        <Text style={styles.emptyEmoji}>🔒</Text>
+        <Icon name="lock" size={28} color={colors.disabled} strokeWidth={1.7} />
         <Text style={styles.emptyText}>
           {error ?? "This profile isn't visible to you."}
         </Text>
@@ -102,7 +105,7 @@ export function ProfileView({ userId, setNativeTitle = false }: { userId: string
               onPress={() => router.push('/account-settings')}
               activeOpacity={0.85}
             >
-              <Text style={styles.editButtonText}>⚙️ Account settings</Text>
+              <Text style={styles.editButtonText}>Account settings</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -192,7 +195,7 @@ export function ProfileView({ userId, setNativeTitle = false }: { userId: string
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -212,14 +215,11 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     backgroundColor: colors.background,
   },
-  emptyEmoji: {
-    fontSize: 32,
-    marginBottom: spacing.sm,
-  },
   emptyText: {
     color: colors.textMuted,
     textAlign: 'center',
     lineHeight: 20,
+    marginTop: spacing.sm,
   },
   header: {
     alignItems: 'center',
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   avatarInitial: {
     fontSize: 32,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primaryDark,
   },
   name: {
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: colors.primary,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
   },
   card: {
     backgroundColor: colors.surface,
@@ -290,9 +290,8 @@ const styles = StyleSheet.create({
   },
   stat: {},
   statValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.primaryDark,
+    ...typography.stat,
+    color: colors.text,
   },
   statLabel: {
     color: colors.textMuted,
@@ -310,7 +309,7 @@ const styles = StyleSheet.create({
   },
   recordValue: {
     color: colors.text,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
   },
   recordEmpty: {
     color: colors.textMuted,

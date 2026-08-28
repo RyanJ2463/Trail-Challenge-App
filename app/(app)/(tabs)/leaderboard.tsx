@@ -4,9 +4,11 @@ import { Link, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../../lib/auth-context';
 import { getFriendsWeeklyLeaderboard, getWeeklyLeaderboard, type LeaderboardEntry } from '../../../lib/leaderboard';
 import { Icon, rankIconName } from '../../../components/Icon';
-import { colors, radius, spacing, typography } from '../../../lib/theme';
+import { fonts, radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../../../lib/theme';
 
 function RankBadge({ rank }: { rank: number }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const icon = rankIconName(rank);
   return (
     <View style={styles.rank}>
@@ -23,6 +25,8 @@ type Scope = 'global' | 'friends';
 
 export default function Leaderboard() {
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const userId = session?.user.id;
 
   const [scope, setScope] = useState<Scope>('global');
@@ -128,7 +132,7 @@ export default function Leaderboard() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -163,11 +167,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   tabText: {
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     color: colors.primaryDark,
   },
   tabTextSelected: {
-    color: colors.white,
+    color: colors.onPrimary,
   },
   row: {
     flexDirection: 'row',
@@ -191,7 +195,7 @@ const styles = StyleSheet.create({
   },
   rankText: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.monoMedium,
     color: colors.textMuted,
   },
   name: {
@@ -204,7 +208,8 @@ const styles = StyleSheet.create({
     color: colors.primaryDark,
   },
   miles: {
-    fontWeight: '700',
+    fontFamily: fonts.monoMedium,
+    fontSize: 15,
     color: colors.primaryDark,
   },
   emptyCard: {
