@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    *{ box-sizing: border-box; }
+    body { margin: 0; background: #f5f6f8; color: #1a1d24; font-family: 'IBM Plex Sans', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+    a { color: #31527c; text-decoration: none; font-weight: 600; } a:hover { color: #25405f; }
+    .ref { display: flex; gap: 16px; background: #fff; border: 1px solid #e4e7ec; border-radius: 10px; padding: 16px; }
+    .ref .vis { width: 76px; height: 76px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .ref h3 { font-size: 15px; font-weight: 600; margin: 0 0 4px; }
+    .ref p { font-size: 12.5px; color: #565e6c; margin: 0; line-height: 1.5; }
+    .ref .link { font-size: 12.5px; color: #25405f; font-weight: 600; margin-top: 6px; display: block; }
+  </style>
+</helmet>
+
+<div style="width: 720px; min-height: 980px; background: #f5f6f8; padding: 48px;">
+
+  <div class="mono" style="font-size: 12px; font-weight: 500; letter-spacing: 0.14em; color: #31527c;">7 · REFERENCES</div>
+  <h1 style="font-size: 33px; font-weight: 600; margin: 6px 0 6px; letter-spacing: -0.02em;">Why this system</h1>
+  <p style="font-size: 13px; color: #565e6c; margin: 0 0 26px; max-width: 58ch; line-height: 1.5;">Touchstones for "minimalist outdoor tech" — each choice traces to one of these.</p>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+
+    <div class="ref">
+      <div class="vis" style="background: #111319;">
+        <span class="mono" style="color: #6f97c8; font-size: 15px; font-weight: 500;">14.2</span>
+      </div>
+      <div>
+        <h3>Garmin / Suunto / Wahoo watch faces</h3>
+        <p>A dark panel, one or two data fields huge, everything else tiny and grey. Colour appears only for a state or a route.</p>
+        <span class="link">→ dark as a first-class mode, monospaced hero numbers, the single-accent rule, "the number is the interface".</span>
+      </div>
+    </div>
+
+    <div class="ref">
+      <div class="vis" style="background: #eef0f3; position: relative;">
+        <svg width="76" height="76" viewBox="0 0 76 76"><g fill="none" stroke="#c9ced7" stroke-width="1"><path d="M-5 18 C 20 8 40 26 80 16"/><path d="M-5 34 C 25 24 45 42 80 32"/><path d="M-5 52 C 20 44 50 60 80 50"/></g><path d="M8 56 C 24 48 34 30 52 36" fill="none" stroke="#31527c" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <h3>swisstopo national maps</h3>
+        <p>The gold standard of cartographic restraint — hairline contours on a near-white ground, one saturated colour reserved for the marked route.</p>
+        <span class="link">→ the cool near-white background, contour-only base map with no terrain fill, slate as the one saturated thing on screen.</span>
+      </div>
+    </div>
+
+    <div class="ref">
+      <div class="vis" style="background: #d9dce1;">
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: #f5f6f8; border: 2px solid #8a909c; position: relative;"><span style="position:absolute; left:50%; top:4px; width:2px; height:11px; background:#c23b2e; transform:translateX(-50%);"></span></div>
+      </div>
+      <div>
+        <h3>Aviation &amp; marine instrument dials</h3>
+        <p>Altimeters, chartplotters, depth sounders — legible in a glance under load, colour used strictly as signal: green is nominal, amber is caution, red is fault.</p>
+        <span class="link">→ the disciplined semantic colours, high-contrast readouts, coordinates and headings set in mono.</span>
+      </div>
+    </div>
+
+    <div class="ref">
+      <div class="vis" style="background: #1a1d24;">
+        <div style="width: 44px; height: 44px; border: 1.5px solid #565e6c; border-radius: 3px; display:flex; align-items:center; justify-content:center;"><div style="width:8px;height:8px;border-radius:50%;background:#6f97c8;"></div></div>
+      </div>
+      <div>
+        <h3>Braun / Teenage Engineering / Dieter Rams</h3>
+        <p>"As little design as possible." The object recedes; the function is the whole point; a single accent marks the one control that matters right now.</p>
+        <span class="link">→ minimal chrome, borders not shadows, whitespace over decoration, colour spent only on the primary action.</span>
+      </div>
+    </div>
+
+    <div class="ref">
+      <div class="vis" style="background: #fff; border: 1px solid #e4e7ec;">
+        <span style="font-family: 'IBM Plex Sans', sans-serif; font-size: 26px; font-weight: 600; color: #31527c;">Plex</span>
+      </div>
+      <div>
+        <h3>IBM Plex &amp; the IBM design language</h3>
+        <p>Plex was drawn to sit "at the intersection of mankind and machine"; IBM's neutrals are a cool blue-grey, not a warm one.</p>
+        <span class="link">→ the typeface itself, and the cool undertone running through every grey in the ramp.</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":720,"height":980}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

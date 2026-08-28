@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    *{ box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f5f6f8;
+      color: #1a1d24;
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+    a { color: #31527c; text-decoration: none; font-weight: 600; }
+    a:hover { color: #25405f; }
+  </style>
+</helmet>
+
+<div style="width: 760px; min-height: 960px; background: #f5f6f8; padding: 48px;">
+
+  <div class="mono" style="font-size: 12px; font-weight: 500; letter-spacing: 0.14em; color: #31527c;">TRAIL CHALLENGE</div>
+  <h1 style="font-size: 40px; font-weight: 600; margin: 8px 0 8px; letter-spacing: -0.02em;">Design system</h1>
+  <p style="font-size: 15px; color: #565e6c; margin: 0 0 40px; max-width: 54ch; line-height: 1.55;">
+    Colour, type and application guidance for the hiking / walking / running challenge app.
+    Direction: <strong>minimalist outdoor tech</strong> — the interface recedes so the map and the numbers carry the screen.
+  </p>
+
+  <div class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #7b828f; margin-bottom: 14px;">DIRECTIONS CONSIDERED</div>
+  <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 44px;">
+    <div style="background: #ffffff; border: 1.5px solid #31527c; border-radius: 10px; padding: 16px 18px; display: flex; gap: 16px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 15px; font-weight: 600;">Minimalist outdoor tech</span>
+          <span class="mono" style="font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: #ffffff; background: #31527c; padding: 2px 7px; border-radius: 4px;">CHOSEN</span>
+        </div>
+        <p style="font-size: 13px; color: #565e6c; margin: 6px 0 0; line-height: 1.5;">Cool near-white, hairline greys, one slate accent, monospaced numbers. Instrument-like — a trail computer, not a lifestyle app. The typeface does the character work.</p>
+      </div>
+      <div style="display: flex; gap: 5px; padding-top: 2px;">
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #f5f6f8; border: 1px solid #e4e7ec;"></span>
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #e4e7ec;"></span>
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #31527c;"></span>
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #1a1d24;"></span>
+      </div>
+    </div>
+    <div style="background: #ffffff; border: 1px solid #e4e7ec; border-radius: 10px; padding: 16px 18px; display: flex; gap: 16px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <div style="font-size: 15px; font-weight: 600; color: #565e6c;">Earthy trail-inspired</div>
+        <p style="font-size: 13px; color: #565e6c; margin: 6px 0 0; line-height: 1.5;">Warm off-white paper, forest-green ink, muted earth accents — the direction the current <span class="mono" style="font-size:12px">lib/theme.ts</span> already ships. Grounded and calm; more "national park" than "instrument".</p>
+      </div>
+      <div style="display: flex; gap: 5px; padding-top: 2px;">
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #2f6f4f;"></span>
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #9a6636;"></span>
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #f6f7f2; border: 1px solid #e2e5dd;"></span>
+      </div>
+    </div>
+    <div style="background: #ffffff; border: 1px solid #e4e7ec; border-radius: 10px; padding: 16px 18px; display: flex; gap: 16px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <div style="font-size: 15px; font-weight: 600; color: #565e6c;">Energetic urban athletic</div>
+        <p style="font-size: 13px; color: #565e6c; margin: 6px 0 0; line-height: 1.5;">Near-black and white with one electric accent. Performance-first, closer to Strava / Nike Run Club. Louder and more competitive; strong for city running, weaker for slow hikes and streaks.</p>
+      </div>
+      <div style="display: flex; gap: 5px; padding-top: 2px;">
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #111311;"></span>
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #d8fe4f;"></span>
+        <span style="width: 34px; height: 24px; border-radius: 5px; background: #ff5a1f;"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #7b828f; margin-bottom: 14px;">CORE PALETTE</div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 26px;">
+    <div style="background: #31527c; border-radius: 10px; padding: 16px; color: #ffffff;">
+      <div style="font-size: 14px; font-weight: 600;">Accent · slate</div>
+      <div class="mono" style="font-size: 11px; opacity: 0.8; margin-top: 3px;">#31527c &nbsp; 49 82 124</div>
+      <div style="font-size: 12px; margin-top: 10px; line-height: 1.45; opacity: 0.9;">The one colour. Primary action, active state, your route, links. Used sparingly — everything else is grey.</div>
+    </div>
+    <div style="background: #ffffff; border: 1px solid #e4e7ec; border-radius: 10px; padding: 16px;">
+      <div style="font-size: 14px; font-weight: 600;">Ink · N-900</div>
+      <div class="mono" style="font-size: 11px; color: #7b828f; margin-top: 3px;">#1a1d24 &nbsp; 26 29 36</div>
+      <div style="font-size: 12px; color: #565e6c; margin-top: 10px; line-height: 1.45;">Cool blue-black. All headings and body. A near-neutral that never reads as "coloured".</div>
+    </div>
+  </div>
+
+  <div class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #7b828f; margin-bottom: 10px;">ACTIVITY ACCENTS</div>
+  <div style="display: flex; gap: 10px;">
+    <div style="flex: 1; text-align: center;"><span style="display: block; height: 38px; border-radius: 6px; background: #365a86;"></span><div style="font-size: 12px; font-weight: 500; margin-top: 6px;">Hiking</div><div class="mono" style="font-size: 10px; color: #7b828f;">#365a86</div></div>
+    <div style="flex: 1; text-align: center;"><span style="display: block; height: 38px; border-radius: 6px; background: #2f7d7a;"></span><div style="font-size: 12px; font-weight: 500; margin-top: 6px;">Walking</div><div class="mono" style="font-size: 10px; color: #7b828f;">#2f7d7a</div></div>
+    <div style="flex: 1; text-align: center;"><span style="display: block; height: 38px; border-radius: 6px; background: #9a6742;"></span><div style="font-size: 12px; font-weight: 500; margin-top: 6px;">Running</div><div class="mono" style="font-size: 10px; color: #7b828f;">#9a6742</div></div>
+    <div style="flex: 1; text-align: center;"><span style="display: block; height: 38px; border-radius: 6px; background: #5b6b9e;"></span><div style="font-size: 12px; font-weight: 500; margin-top: 6px;">Cycling</div><div class="mono" style="font-size: 10px; color: #7b828f;">#5b6b9e</div></div>
+    <div style="flex: 1; text-align: center;"><span style="display: block; height: 38px; border-radius: 6px; background: #63707f;"></span><div style="font-size: 12px; font-weight: 500; margin-top: 6px;">Steps</div><div class="mono" style="font-size: 10px; color: #7b828f;">#63707f</div></div>
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":760,"height":960}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
