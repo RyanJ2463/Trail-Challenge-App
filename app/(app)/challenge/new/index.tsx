@@ -2,10 +2,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ACTIVITY_TYPES } from '../../../../lib/activityTypes';
 import { Icon } from '../../../../components/Icon';
-import { colors, radius, spacing, typography } from '../../../../lib/theme';
+import { radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../../../../lib/theme';
 
 export default function ChooseActivityType() {
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
 
   return (
     <View style={styles.container}>
@@ -36,7 +38,7 @@ export default function ChooseActivityType() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

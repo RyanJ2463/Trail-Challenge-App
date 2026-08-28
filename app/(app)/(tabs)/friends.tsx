@@ -28,13 +28,15 @@ import {
   listMyPendingInvites,
   type ChallengeInvite,
 } from '../../../lib/challengeInvites';
-import { colors, radius, spacing, typography } from '../../../lib/theme';
+import { fonts, radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../../../lib/theme';
 
 type FriendsTabView = 'friends' | 'invites';
 
 export default function Friends() {
   const { session } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const userId = session?.user.id;
 
   const [view, setView] = useState<FriendsTabView>('friends');
@@ -341,7 +343,7 @@ export default function Friends() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -374,11 +376,11 @@ const styles = StyleSheet.create({
   },
   toggleText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     color: colors.text,
   },
   toggleTextSelected: {
-    color: colors.white,
+    color: colors.onPrimary,
   },
   sectionTitle: {
     ...typography.heading,
@@ -408,8 +410,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   searchButtonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
   },
   row: {
     flexDirection: 'row',
@@ -456,8 +458,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   smallButtonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
     fontSize: 13,
   },
   smallButtonOutline: {
@@ -469,7 +471,7 @@ const styles = StyleSheet.create({
   },
   smallButtonOutlineText: {
     color: colors.textMuted,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     fontSize: 13,
   },
   requestActions: {
@@ -479,7 +481,7 @@ const styles = StyleSheet.create({
   removeText: {
     color: colors.danger,
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
   },
   emptyCard: {
     backgroundColor: colors.primaryMuted,

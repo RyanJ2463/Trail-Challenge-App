@@ -17,7 +17,7 @@ import { listFriends, type UserProfile } from '../../../../lib/friends';
 import { activityTypeMeta, type ActivityType } from '../../../../lib/activityTypes';
 import type { Tables } from '../../../../lib/database.types';
 import { Icon } from '../../../../components/Icon';
-import { colors, radius, spacing, typography } from '../../../../lib/theme';
+import { fonts, radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../../../../lib/theme';
 
 // Dates are handled as plain YYYY-MM-DD calendar values throughout this
 // screen (no time-of-day, no timezone conversion) so "add 7 days" always
@@ -58,6 +58,8 @@ const DURATION_OPTIONS: { key: DurationOption; label: string; days?: number }[] 
 export default function NewChallengeDetails() {
   const router = useRouter();
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const userId = session?.user.id;
   const { activityType: activityTypeParam } = useLocalSearchParams<{ activityType?: string }>();
   const activityType = (activityTypeParam ?? 'hiking') as ActivityType;
@@ -226,7 +228,7 @@ export default function NewChallengeDetails() {
           >
             <View style={styles.trailOptionText}>
               <View style={styles.trailNameRow}>
-                <Icon name="flag" size={15} color={trailId === null ? colors.white : colors.text} />
+                <Icon name="flag" size={15} color={trailId === null ? colors.onPrimary : colors.text} />
                 <Text
                   style={[styles.trailOptionName, trailId === null && styles.trailOptionTextSelected]}
                 >
@@ -281,7 +283,7 @@ export default function NewChallengeDetails() {
                             <Icon
                               name="route"
                               size={15}
-                              color={trailId === trail.id ? colors.white : colors.text}
+                              color={trailId === trail.id ? colors.onPrimary : colors.text}
                             />
                             <Text
                               style={[
@@ -441,7 +443,7 @@ export default function NewChallengeDetails() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -476,7 +478,7 @@ const styles = StyleSheet.create({
   },
   activityChange: {
     color: colors.primary,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     fontSize: 13,
   },
   label: {
@@ -513,11 +515,11 @@ const styles = StyleSheet.create({
   },
   startOptionText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     color: colors.text,
   },
   startOptionTextSelected: {
-    color: colors.white,
+    color: colors.onPrimary,
   },
   customDateInput: {
     marginTop: spacing.sm,
@@ -534,7 +536,7 @@ const styles = StyleSheet.create({
   },
   trailSummaryMeta: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     color: colors.primaryDark,
     marginRight: spacing.sm,
   },
@@ -592,11 +594,11 @@ const styles = StyleSheet.create({
   },
   trailOptionMeta: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     color: colors.textMuted,
   },
   trailOptionTextSelected: {
-    color: colors.white,
+    color: colors.onPrimary,
   },
   switchRow: {
     flexDirection: 'row',
@@ -625,8 +627,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   buttonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
     fontSize: 16,
   },
   error: {

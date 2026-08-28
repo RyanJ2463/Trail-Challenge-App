@@ -3,9 +3,11 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Icon } from '../../components/Icon';
-import { colors, radius, spacing, typography } from '../../lib/theme';
+import { fonts, radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../../lib/theme';
 
 export default function SignUp() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -126,7 +128,7 @@ export default function SignUp() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -169,8 +171,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
     fontSize: 16,
   },
   link: {
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: colors.primary,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
   },
   error: {
     color: colors.danger,

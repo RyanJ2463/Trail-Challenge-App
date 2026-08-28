@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    *{ box-sizing: border-box; }
+    body { margin: 0; background: #f5f6f8; color: #1a1d24; font-family: 'IBM Plex Sans', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+    a { color: #31527c; text-decoration: none; font-weight: 600; } a:hover { color: #25405f; }
+    .row { display: flex; gap: 16px; padding: 13px 0; border-top: 1px solid #e4e7ec; }
+    .sw { width: 44px; height: 44px; border-radius: 6px; flex-shrink: 0; }
+    .nm { width: 150px; flex-shrink: 0; }
+    .nm b { font-size: 14px; font-weight: 600; display: block; }
+    .nm span { font-size: 10.5px; color: #7b828f; }
+    .ds { flex: 1; min-width: 0; }
+    .ds .u { font-size: 12.5px; line-height: 1.45; }
+    .ds .p { font-size: 11.5px; color: #565e6c; line-height: 1.4; margin-top: 3px; }
+    h2 { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; color: #7b828f; margin: 30px 0 2px; }
+  </style>
+</helmet>
+
+<div style="width: 820px; min-height: 1760px; background: #f5f6f8; padding: 48px;">
+
+  <div class="mono" style="font-size: 12px; font-weight: 500; letter-spacing: 0.14em; color: #31527c;">2 · COLOUR</div>
+  <h1 style="font-size: 33px; font-weight: 600; margin: 6px 0 6px; letter-spacing: -0.02em;">Palette spec</h1>
+  <p style="font-size: 13px; color: #565e6c; margin: 0 0 6px; max-width: 60ch; line-height: 1.5;">Light-mode values. This direction runs on one accent and a cool grey ramp — colour is a signal, not decoration. Dark-mode shifts on the <strong>Modes</strong> board.</p>
+
+  <h2>ACCENT</h2>
+  <div class="row"><span class="sw" style="background:#31527c"></span><div class="nm"><b>Slate</b><span class="mono">#31527c · 49 82 124</span></div><div class="ds"><div class="u">The single brand colour: primary action, active nav, your route on the map, links, focus rings.</div><div class="p">Cool, technical, unhurried — the blue of instrument dials and marine charts. Reads as "precision", not "outdoors". Use it on maybe 5% of any screen.</div></div></div>
+  <div class="row"><span class="sw" style="background:#25405f"></span><div class="nm"><b>Slate deep</b><span class="mono">#25405f · 37 64 95</span></div><div class="ds"><div class="u">Pressed states, and slate text that sits on the muted tint.</div></div></div>
+  <div class="row"><span class="sw" style="background:#e9eef5;border:1px solid #d9e2ee"></span><div class="nm"><b>Slate muted</b><span class="mono">#e9eef5 · 233 238 245</span></div><div class="ds"><div class="u">Selected-row background, quiet chips, progress-track, the info banner.</div><div class="p">The accent at ~8% — enough to say "this is the active thing" without a fill.</div></div></div>
+
+  <h2>NEUTRAL RAMP &nbsp;<span style="letter-spacing:0;text-transform:none;font-style:italic">— cool blue-grey, near-zero chroma</span></h2>
+  <div class="row"><span class="sw" style="background:#ffffff;border:1px solid #e4e7ec"></span><div class="nm"><b>N-0 · Surface</b><span class="mono">#ffffff</span></div><div class="ds"><div class="u">Cards, sheets, inputs. Large flat areas — the base layer the greys sit on.</div></div></div>
+  <div class="row"><span class="sw" style="background:#f5f6f8;border:1px solid #e4e7ec"></span><div class="nm"><b>N-50 · Background</b><span class="mono">#f5f6f8 · 245 246 248</span></div><div class="ds"><div class="u">App background. A cool near-white — barely there, no warmth.</div></div></div>
+  <div class="row"><span class="sw" style="background:#eef0f3;border:1px solid #e4e7ec"></span><div class="nm"><b>N-100 · Raised</b><span class="mono">#eef0f3</span></div><div class="ds"><div class="u">Hover, pressed rows, secondary panels, table zebra.</div></div></div>
+  <div class="row"><span class="sw" style="background:#e4e7ec"></span><div class="nm"><b>N-200 · Border</b><span class="mono">#e4e7ec · 228 231 236</span></div><div class="ds"><div class="u">Every hairline: card edges, dividers, 1px input outlines. This direction leans on borders, not shadows.</div></div></div>
+  <div class="row"><span class="sw" style="background:#d3d7de"></span><div class="nm"><b>N-300 · Strong border</b><span class="mono">#d3d7de · 211 215 222</span></div><div class="ds"><div class="u">Disabled surfaces, chart gridlines, elevation-profile axis.</div></div></div>
+  <div class="row"><span class="sw" style="background:#8a909c"></span><div class="nm"><b>N-400 · Faint</b><span class="mono">#8a909c · 138 144 156</span></div><div class="ds"><div class="u">Muted icons, disabled controls, placeholder glyphs.</div><div class="p">Not readable text — 3.0:1 on the background, fails AA. See the Accessibility board.</div></div></div>
+  <div class="row"><span class="sw" style="background:#5f6673"></span><div class="nm"><b>N-500 · Tertiary text</b><span class="mono">#5f6673 · 95 102 115</span></div><div class="ds"><div class="u">Timestamps, split labels, coordinates, the least-important text.</div><div class="p">~5:1 on light — the AA-safe floor for metadata.</div></div></div>
+  <div class="row"><span class="sw" style="background:#565e6c"></span><div class="nm"><b>N-600 · Secondary text</b><span class="mono">#565e6c · 86 94 108</span></div><div class="ds"><div class="u">Body sub-text, captions, descriptions, unit labels.</div><div class="p">6.0:1 — AA for every size.</div></div></div>
+  <div class="row"><span class="sw" style="background:#1a1d24"></span><div class="nm"><b>N-900 · Ink</b><span class="mono">#1a1d24 · 26 29 36</span></div><div class="ds"><div class="u">Headings and body copy. Cool blue-black, never pure #000.</div><div class="p">15.6:1 — AAA everywhere.</div></div></div>
+
+  <h2>ACTIVITY ACCENTS &nbsp;<span style="letter-spacing:0;text-transform:none;font-style:italic">— cool band + one warm; all AA on white</span></h2>
+  <div class="row"><span class="sw" style="background:#365a86"></span><div class="nm"><b>Hiking</b><span class="mono">#365a86</span></div><div class="ds"><div class="u">≈ the accent slate — hiking is the default activity.</div><div class="p">Chart blue.</div></div></div>
+  <div class="row"><span class="sw" style="background:#2f7d7a"></span><div class="nm"><b>Walking</b><span class="mono">#2f7d7a · 47 125 122</span></div><div class="ds"><div class="u">Walking challenge cards, filters, the walking glyph.</div><div class="p">Muted teal — cool, steady, ambient.</div></div></div>
+  <div class="row"><span class="sw" style="background:#9a6742"></span><div class="nm"><b>Running</b><span class="mono">#9a6742 · 154 103 66</span></div><div class="ds"><div class="u">Running challenges and pace stats.</div><div class="p">The one warm accent — running is the hot activity. A restrained clay, not a bright orange, so it still fits the cool set.</div></div></div>
+  <div class="row"><span class="sw" style="background:#5b6b9e"></span><div class="nm"><b>Cycling</b><span class="mono">#5b6b9e · 91 107 158</span></div><div class="ds"><div class="u">Cycling challenges.</div><div class="p">Indigo — a step around the wheel from the slate, still clearly "cool / fast".</div></div></div>
+  <div class="row"><span class="sw" style="background:#63707f"></span><div class="nm"><b>Steps</b><span class="mono">#63707f · 99 112 127</span></div><div class="ds"><div class="u">Step-count challenges and the daily-steps widget.</div><div class="p">Near-neutral steel — steps are a passive background metric, so the colour is almost grey.</div></div></div>
+
+  <h2>SEMANTIC &nbsp;<span style="letter-spacing:0;text-transform:none;font-style:italic">— text colour / tinted-fill pair</span></h2>
+  <div class="row"><span class="sw" style="background:#217a56"></span><div class="nm"><b>Success</b><span class="mono">text #217a56<br>fill #e4f2ec</span></div><div class="ds"><div class="u">Goal completed, challenge finished, verified sync, streak kept. Fill #e4f2ec with text #175a3f.</div><div class="p">A cool, blue-leaning green so it never gets confused with a warm brand green — it reads purely as a state.</div></div></div>
+  <div class="row"><span class="sw" style="background:#b0791f"></span><div class="nm"><b>Warning</b><span class="mono">text #8a5e12<br>accent #b0791f<br>fill #f7ecd3</span></div><div class="ds"><div class="u">Nearing a limit, weak GPS, low battery, streak about to break, sync delayed. Fill #f7ecd3 with text #7a5110.</div><div class="p">Amber. The accent #b0791f is 3.8:1 — icons / borders / large text only; warning body text uses #8a5e12 (5.7:1).</div></div></div>
+  <div class="row"><span class="sw" style="background:#c23b2e"></span><div class="nm"><b>Error</b><span class="mono">text #c23b2e<br>fill #fbe8e6</span></div><div class="ds"><div class="u">Failed sync, rejected submission, permission denied, network lost. Fill #fbe8e6 with text #9a2c22.</div><div class="p">A cleaner, slightly cooler red than the earthy direction's. Reserved for things that broke, never for warnings.</div></div></div>
+  <div class="row"><span class="sw" style="background:#2f6fb0"></span><div class="nm"><b>Info</b><span class="mono">text #2f6fb0<br>fill #e9eef5</span></div><div class="ds"><div class="u">Trail notes, tips, neutral system messages. Fill = the slate-muted tint, text #285c93.</div><div class="p">The accent pushed a touch brighter — clearly informational, never an action.</div></div></div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":820,"height":1760}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

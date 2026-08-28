@@ -19,9 +19,11 @@ import {
 import { activityTypeMeta } from '../../../lib/activityTypes';
 import { isHealthSyncAvailable, requestHealthAuthorization, syncHealthData } from '../../../lib/healthSync';
 import { Icon } from '../../../components/Icon';
-import { colors, radius, spacing, typography } from '../../../lib/theme';
+import { fonts, radius, spacing, typography, useTheme, useThemedStyles, type Theme } from '../../../lib/theme';
 
 function ChallengeSubtitle({ challenge }: { challenge: ChallengeWithTrail }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.cardSubtitle}>
       <Icon name={activityTypeMeta(challenge.activity_type).icon} size={15} color={colors.textMuted} />
@@ -36,6 +38,8 @@ function ChallengeSubtitle({ challenge }: { challenge: ChallengeWithTrail }) {
 export default function Home() {
   const { session } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const userId = session?.user.id;
 
   const [myChallenges, setMyChallenges] = useState<ChallengeWithTrail[]>([]);
@@ -202,7 +206,7 @@ export default function Home() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -234,15 +238,10 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     alignItems: 'center',
     marginBottom: spacing.xl,
-    shadowColor: colors.primaryDark,
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
   },
   startButtonText: {
-    color: colors.white,
-    fontWeight: '700',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
     fontSize: 16,
   },
   loading: {
@@ -267,7 +266,7 @@ const styles = StyleSheet.create({
   },
   syncButtonText: {
     color: colors.primaryDark,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
   },
   syncStatus: {
     color: colors.textMuted,
@@ -327,7 +326,8 @@ const styles = StyleSheet.create({
   },
   cardMeta: {
     color: colors.textFaint,
-    fontSize: 13,
+    fontFamily: fonts.mono,
+    fontSize: 12,
   },
   pill: {
     borderRadius: radius.pill,
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   },
   pillText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
   pillTextPublic: {
     color: colors.primaryDark,
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   joinButtonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
   },
 });

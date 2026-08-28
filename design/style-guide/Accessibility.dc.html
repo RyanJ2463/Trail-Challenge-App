@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    *{ box-sizing: border-box; }
+    body { margin: 0; background: #f5f6f8; color: #1a1d24; font-family: 'IBM Plex Sans', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; }
+    a { color: #31527c; text-decoration: none; font-weight: 600; } a:hover { color: #25405f; }
+    .r { display: grid; grid-template-columns: 1.9fr 0.5fr 0.7fr 0.7fr 1.5fr; gap: 10px; padding: 9px 12px; align-items: center; font-size: 12px; border-top: 1px solid #e4e7ec; }
+    .r.head { border: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.05em; color: #7b828f; padding-bottom: 4px; }
+    .chip { display: inline-flex; align-items: center; gap: 7px; }
+    .chip i { width: 26px; height: 18px; border-radius: 3px; flex-shrink: 0; display: block; }
+    .badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; text-align: center; }
+    .pass { background: #e4f2ec; color: #175a3f; }
+    .aaa { background: #31527c; color: #fff; }
+    .fail { background: #fbe8e6; color: #9a2c22; }
+    .partial { background: #f7ecd3; color: #7a5110; }
+    .ratio { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 13px; }
+  </style>
+</helmet>
+
+<div style="width: 800px; min-height: 1160px; background: #f5f6f8; padding: 48px;">
+
+  <div class="mono" style="font-size: 12px; font-weight: 500; letter-spacing: 0.14em; color: #31527c;">3 · ACCESSIBILITY</div>
+  <h1 style="font-size: 33px; font-weight: 600; margin: 6px 0 6px; letter-spacing: -0.02em;">Contrast check</h1>
+  <p style="font-size: 13px; color: #565e6c; margin: 0 0 22px; max-width: 62ch; line-height: 1.5;">
+    WCAG 2.1 — normal text <strong>4.5:1</strong>, large text (≥24px / ≥19px bold) and UI boundaries <strong>3:1</strong>.
+    Against <span class="mono">#f5f6f8</span> background and <span class="mono">#ffffff</span> surface. The one-accent
+    approach helps here: the slate lands at AAA.
+  </p>
+
+  <div style="background: #fff; border: 1px solid #e4e7ec; border-radius: 10px; padding: 6px 4px 10px; margin-bottom: 24px;">
+    <div class="r head"><span>Pair</span><span>Ratio</span><span>Normal</span><span>Large / UI</span><span>Note</span></div>
+    <div class="r"><span class="chip"><i style="background:#1a1d24"></i><span class="mono">N-900 ink · on bg / surface</span></span><span class="ratio">15.6</span><span class="badge aaa">AAA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#565e6c"></i><span class="mono">N-600 secondary text · on bg</span></span><span class="ratio">6.0</span><span class="badge pass">AA</span><span class="badge pass">AA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#5f6673"></i><span class="mono">N-500 tertiary text · on bg</span></span><span class="ratio">5.3</span><span class="badge pass">AA</span><span class="badge pass">AA</span><span>Metadata floor</span></div>
+    <div class="r" style="background:#fdf1f0;"><span class="chip"><i style="background:#8a909c"></i><span class="mono">N-400 · as text on bg</span></span><span class="ratio" style="color:#9a2c22">3.0</span><span class="badge fail">FAIL</span><span class="badge fail">FAIL</span><span style="color:#9a2c22;font-weight:600">Fix → use N-500</span></div>
+    <div class="r"><span class="chip"><i style="background:#31527c"></i><span class="mono">Slate · as text on surface</span></span><span class="ratio">8.0</span><span class="badge aaa">AAA</span><span class="badge aaa">AAA</span><span>Small-text safe</span></div>
+    <div class="r"><span class="chip"><i style="background:#31527c"></i><i style="background:#fff;border:1px solid #e4e7ec"></i><span class="mono">White · on Slate button</span></span><span class="ratio">8.0</span><span class="badge aaa">AAA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#25405f"></i><i style="background:#e9eef5"></i><span class="mono">Slate-deep · on muted tint</span></span><span class="ratio">9.1</span><span class="badge aaa">AAA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#217a56"></i><span class="mono">Success · text / button</span></span><span class="ratio">5.3</span><span class="badge pass">AA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#c23b2e"></i><span class="mono">Error · text / button</span></span><span class="ratio">5.3</span><span class="badge pass">AA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#2f6fb0"></i><span class="mono">Info · text on surface</span></span><span class="ratio">5.2</span><span class="badge pass">AA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r" style="background:#fdf8ef;"><span class="chip"><i style="background:#b0791f"></i><span class="mono">Warning accent · as text on bg</span></span><span class="ratio" style="color:#7a5110">3.5</span><span class="badge fail">FAIL</span><span class="badge partial">AA large</span><span style="color:#7a5110;font-weight:600">Text → #8a5e12 (5.7)</span></div>
+    <div class="r"><span class="chip"><i style="background:#f0c05a"></i><i style="background:#1a1d24"></i><span class="mono">N-900 · on warning fill #f0c05a</span></span><span class="ratio">9.9</span><span class="badge aaa">AAA</span><span class="badge aaa">AAA</span><span>Banner pattern</span></div>
+    <div class="r"><span class="chip"><i style="background:#2f7d7a"></i><span class="mono">Walking accent · on surface</span></span><span class="ratio">4.8</span><span class="badge pass">AA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#9a6742"></i><span class="mono">Running accent · on surface</span></span><span class="ratio">4.8</span><span class="badge pass">AA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#5b6b9e"></i><span class="mono">Cycling accent · on surface</span></span><span class="ratio">5.2</span><span class="badge pass">AA</span><span class="badge aaa">AAA</span><span></span></div>
+    <div class="r"><span class="chip"><i style="background:#63707f"></i><span class="mono">Steps accent · on surface</span></span><span class="ratio">5.1</span><span class="badge pass">AA</span><span class="badge aaa">AAA</span><span></span></div>
+  </div>
+
+  <div class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #7b828f; margin-bottom: 12px;">FIXES</div>
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="background: #fff; border: 1px solid #e4e7ec; border-left: 3px solid #c23b2e; border-radius: 8px; padding: 14px 16px;">
+      <strong style="font-size: 13.5px;">1 · N-400 <span class="mono" style="font-size:12px">#8a909c</span> is not a text colour.</strong>
+      <p style="font-size: 12.5px; color: #565e6c; margin: 5px 0 0; line-height: 1.5;">Today it's <span class="mono" style="font-size:11px">theme.textFaint</span> — timestamps, "+X mi this week", card meta. At 3.0:1 it fails AA at every size. Move that text to <span class="mono" style="font-size:11px">N-500 #5f6673</span> (5.3:1). Keep #8a909c for icons, disabled controls and placeholders only.</p>
+    </div>
+    <div style="background: #fff; border: 1px solid #e4e7ec; border-left: 3px solid #b0791f; border-radius: 8px; padding: 14px 16px;">
+      <strong style="font-size: 13.5px;">2 · Warning is two tokens.</strong>
+      <p style="font-size: 12.5px; color: #565e6c; margin: 5px 0 0; line-height: 1.5;"><span class="mono" style="font-size:11px">#b0791f</span> (3.5:1) for icons, borders and fills. Warning <em>text</em> uses <span class="mono" style="font-size:11px">#8a5e12</span> (5.7:1), or dark ink on an amber fill.</p>
+    </div>
+    <div style="background: #fff; border: 1px solid #e4e7ec; border-left: 3px solid #31527c; border-radius: 8px; padding: 14px 16px;">
+      <strong style="font-size: 13.5px;">3 · The accent and semantics all clear AA.</strong>
+      <p style="font-size: 12.5px; color: #565e6c; margin: 5px 0 0; line-height: 1.5;">Slate is AAA as text and as a button ground. Every semantic and activity accent is ≥4.8:1 on surface. Filled buttons (white on fill) match. No further changes.</p>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":800,"height":1160}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { SvgXml } from 'react-native-svg';
-import { colors } from '../lib/theme';
+import { useTheme } from '../lib/theme';
 
 // One custom line-icon set for the app, replacing platform emoji so the
 // look is consistent across iOS/Android. Geometric "field survey" style:
@@ -57,7 +57,9 @@ type Props = {
   strokeWidth?: number;
 };
 
-export function Icon({ name, size = 24, color = colors.text, strokeWidth = 2 }: Props) {
+export function Icon({ name, size = 24, color, strokeWidth = 2 }: Props) {
+  const { colors } = useTheme();
+  const tint = color ?? colors.text;
   const xml = useMemo(
     () =>
       `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" ` +
@@ -65,7 +67,7 @@ export function Icon({ name, size = 24, color = colors.text, strokeWidth = 2 }: 
       `stroke-linejoin="round">${PATHS[name]}</svg>`,
     [name, strokeWidth]
   );
-  return <SvgXml xml={xml} width={size} height={size} color={color} />;
+  return <SvgXml xml={xml} width={size} height={size} color={tint} />;
 }
 
 /** The rank badge for a leaderboard/standings position (1–3 get a numbered badge). */

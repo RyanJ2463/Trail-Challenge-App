@@ -28,7 +28,16 @@ import {
 import { getRouteSegments, type TrailPoint } from '../../../lib/trailPosition';
 import { activityTypeMeta } from '../../../lib/activityTypes';
 import { Icon, rankIconName } from '../../../components/Icon';
-import { colors, radius, spacing, typography } from '../../../lib/theme';
+import {
+  fonts,
+  mapPalette,
+  radius,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Theme,
+} from '../../../lib/theme';
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? '');
 
@@ -49,6 +58,8 @@ export default function ChallengeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const challengeId = Number(id);
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const userId = session?.user.id;
 
   const [challenge, setChallenge] = useState<ChallengeWithTrail | null>(null);
@@ -185,7 +196,7 @@ export default function ChallengeDetail() {
               >
                 <Mapbox.LineLayer
                   id="remaining-route-line"
-                  style={{ lineColor: colors.route, lineWidth: 4, lineCap: 'round', lineJoin: 'round' }}
+                  style={{ lineColor: mapPalette.route, lineWidth: 4, lineCap: 'round', lineJoin: 'round' }}
                 />
               </Mapbox.ShapeSource>
             )}
@@ -197,7 +208,7 @@ export default function ChallengeDetail() {
               >
                 <Mapbox.LineLayer
                   id="completed-route-line"
-                  style={{ lineColor: colors.primary, lineWidth: 5, lineCap: 'round', lineJoin: 'round' }}
+                  style={{ lineColor: mapPalette.primary, lineWidth: 5, lineCap: 'round', lineJoin: 'round' }}
                 />
               </Mapbox.ShapeSource>
             )}
@@ -222,10 +233,10 @@ export default function ChallengeDetail() {
             )}
           </Mapbox.MapView>
 
-          <View style={styles.legend}>
-            <LegendRow swatch={<View style={styles.legendYou} />} label="You" />
-            <LegendRow swatch={<View style={styles.legendFriend} />} label="Friends" />
-            <LegendRow swatch={<View style={styles.legendOther} />} label="Others" />
+          <View style={markerStyles.legend}>
+            <LegendRow swatch={<View style={markerStyles.legendYou} />} label="You" />
+            <LegendRow swatch={<View style={markerStyles.legendFriend} />} label="Friends" />
+            <LegendRow swatch={<View style={markerStyles.legendOther} />} label="Others" />
             <LegendRow swatch={<Flag size={11} />} label="Finished" />
           </View>
         </View>
@@ -413,7 +424,7 @@ function Flag({ size }: { size: number }) {
   return (
     <View style={{ width: size * 0.8, height: size }}>
       <View
-        style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 2, backgroundColor: colors.text }}
+        style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 2, backgroundColor: mapPalette.ink }}
       />
       <View
         style={{
@@ -422,9 +433,9 @@ function Flag({ size }: { size: number }) {
           top: 1,
           width: size * 0.62,
           height: size * 0.44,
-          backgroundColor: colors.primary,
+          backgroundColor: mapPalette.primary,
           borderWidth: 1,
-          borderColor: colors.white,
+          borderColor: mapPalette.white,
         }}
       />
     </View>
@@ -433,13 +444,15 @@ function Flag({ size }: { size: number }) {
 
 function LegendRow({ swatch, label }: { swatch: ReactNode; label: string }) {
   return (
-    <View style={styles.legendRow}>
-      <View style={styles.legendSwatch}>{swatch}</View>
-      <Text style={styles.legendLabel}>{label}</Text>
+    <View style={markerStyles.legendRow}>
+      <View style={markerStyles.legendSwatch}>{swatch}</View>
+      <Text style={markerStyles.legendLabel}>{label}</Text>
     </View>
   );
 }
 
+// The map is always the light Mapbox "Outdoors" style, so its overlays keep a
+// fixed light palette regardless of the app's light / dark theme.
 const markerStyles = StyleSheet.create({
   wrap: {
     alignItems: 'center',
@@ -449,7 +462,7 @@ const markerStyles = StyleSheet.create({
     bottom: '100%',
     alignSelf: 'center',
     marginBottom: 6,
-    backgroundColor: colors.white,
+    backgroundColor: mapPalette.white,
     borderRadius: radius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
@@ -461,17 +474,17 @@ const markerStyles = StyleSheet.create({
   },
   calloutText: {
     fontSize: 12,
-    color: colors.textMuted,
+    color: mapPalette.faint,
   },
   calloutName: {
-    fontWeight: '700',
-    color: colors.text,
+    fontFamily: fonts.semibold,
+    color: mapPalette.ink,
   },
   youRing: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: 'rgba(47, 111, 79, 0.25)',
+    backgroundColor: 'rgba(49, 82, 124, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -479,61 +492,40 @@ const markerStyles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: colors.primary,
+    backgroundColor: mapPalette.primary,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: mapPalette.white,
   },
   friendPin: {
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: colors.friend,
+    backgroundColor: mapPalette.friend,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: mapPalette.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
   friendInitials: {
-    color: colors.white,
+    color: mapPalette.white,
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: fonts.semibold,
   },
   otherDot: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: colors.white,
+    backgroundColor: mapPalette.white,
     borderWidth: 2,
-    borderColor: colors.textFaint,
-  },
-});
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-    backgroundColor: colors.background,
-  },
-  mapWrap: {
-    height: '42%',
-    backgroundColor: colors.border,
-  },
-  map: {
-    flex: 1,
+    borderColor: mapPalette.faint,
   },
   legend: {
     position: 'absolute',
     left: spacing.md,
     bottom: spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: mapPalette.scrim,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: mapPalette.border,
     borderRadius: radius.sm,
     paddingHorizontal: spacing.sm + 2,
     paddingVertical: spacing.sm,
@@ -553,27 +545,48 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: colors.primary,
+    backgroundColor: mapPalette.primary,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: mapPalette.white,
   },
   legendFriend: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: colors.friend,
+    backgroundColor: mapPalette.friend,
   },
   legendOther: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: colors.white,
+    backgroundColor: mapPalette.white,
     borderWidth: 2,
-    borderColor: colors.textFaint,
+    borderColor: mapPalette.faint,
   },
   legendLabel: {
     fontSize: 11,
-    color: colors.text,
+    color: mapPalette.ink,
+  },
+});
+
+const makeStyles = ({ colors }: Theme) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+    backgroundColor: colors.background,
+  },
+  mapWrap: {
+    height: '42%',
+    backgroundColor: colors.border,
+  },
+  map: {
+    flex: 1,
   },
   info: {
     flex: 1,
@@ -632,7 +645,7 @@ const styles = StyleSheet.create({
   rankPillText: {
     color: colors.primaryDark,
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.monoMedium,
   },
   progressRow: {
     flexDirection: 'row',
@@ -640,9 +653,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   progressMiles: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: colors.primaryDark,
+    fontFamily: fonts.monoMedium,
+    fontSize: 28,
+    color: colors.text,
   },
   progressTotal: {
     fontSize: 15,
@@ -673,8 +686,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   joinButtonText: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.onPrimary,
+    fontFamily: fonts.semibold,
     fontSize: 16,
   },
   standingsHeader: {
@@ -714,7 +727,7 @@ const styles = StyleSheet.create({
   },
   standingRankText: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.monoMedium,
     color: colors.textMuted,
   },
   standingAvatar: {
@@ -729,7 +742,7 @@ const styles = StyleSheet.create({
   },
   standingAvatarText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     color: colors.primaryDark,
   },
   standingFriendDot: {
@@ -754,7 +767,7 @@ const styles = StyleSheet.create({
   },
   standingNameMe: {
     color: colors.primaryDark,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
   standingSub: {
     fontSize: 12,
@@ -766,11 +779,12 @@ const styles = StyleSheet.create({
   },
   standingMiles: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: fonts.monoMedium,
     color: colors.primaryDark,
   },
   standingWeek: {
     fontSize: 11,
+    fontFamily: fonts.mono,
     color: colors.textFaint,
     marginTop: 1,
   },
@@ -793,7 +807,7 @@ const styles = StyleSheet.create({
   inviteChipText: {
     color: colors.textMuted,
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
   },
   error: {
     color: colors.danger,

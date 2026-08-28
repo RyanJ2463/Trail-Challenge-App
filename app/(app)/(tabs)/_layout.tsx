@@ -5,7 +5,7 @@ import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../../lib/auth-context';
 import { listMyPendingInvites } from '../../../lib/challengeInvites';
 import { Icon, type IconName } from '../../../components/Icon';
-import { colors } from '../../../lib/theme';
+import { useTheme } from '../../../lib/theme';
 
 function tabIcon(name: IconName) {
   return ({ color }: { color: ColorValue }) => (
@@ -15,6 +15,7 @@ function tabIcon(name: IconName) {
 
 export default function TabsLayout() {
   const { session } = useAuth();
+  const { colors, fonts } = useTheme();
   const userId = session?.user.id;
 
   const [pendingInviteCount, setPendingInviteCount] = useState(0);
@@ -32,7 +33,14 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
+        tabBarInactiveTintColor: colors.textFaint,
+        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarLabelStyle: { fontFamily: fonts.medium },
+        headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.text,
+        headerTitleStyle: { color: colors.text, fontFamily: fonts.semibold },
+        headerShadowVisible: false,
+        sceneStyle: { backgroundColor: colors.background },
       }}
     >
       <Tabs.Screen
